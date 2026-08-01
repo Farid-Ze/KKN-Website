@@ -1,0 +1,25 @@
+{
+  "auditMetadata": {
+    "auditorVersion": "2026.2.0-decompiler",
+    "timestamp": "2026-08-01T19:59:26.860Z",
+    "statusClassification": "[PARTIALLY INSPECTED - DECOMPILATION IN PROGRESS]",
+    "sourceBundle": "/build.js",
+    "totalModulesParsed": 416
+  },
+  "modulesCategorySummary": {
+    "Application Module": 288,
+    "Polyfill / core-js": 108,
+    "GSAP Animation": 9,
+    "Three.js / WebGL": 9,
+    "Vue Framework": 2
+  },
+  "keyDecompiledModuleSignatures": {
+    "1": { "category": "Polyfill / core-js", "deps": ["core-js/shim", "regenerator-runtime/runtime", "core-js/fn/regexp/escape"] },
+    "2": { "category": "Application Module", "purpose": "CubicBezier / GSAP Easing interpolation helper", "deps": [] },
+    "3": { "category": "Polyfill / core-js", "deps": ["../../modules/core.regexp.escape", "../../modules/_core"] },
+    "13": { "category": "Application Module", "purpose": "Array.prototype species creator", "deps": ["./_ctx", "./_iobject", "./_to-object", "./_to-length", "./_array-species-create"] },
+    "20": { "category": "Application Module", "purpose": "ES6 Map / Set collection polyfill", "deps": ["./_object-dp", "./_object-create", "./_redefine-all", "./_ctx", "./_an-instance", "./_for-of"] },
+    "328": { "category": "Polyfill / core-js", "purpose": "core-js master shim entry point", "depsCount": 197 },
+    "331": { "category": "Polyfill / core-js", "purpose": "regenerator-runtime entry point", "depsCount": 0 }
+  }
+}

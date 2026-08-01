@@ -1,0 +1,62 @@
+{
+  "manifestMetadata": {
+    "auditorVersion": "2026.2.0-bem-css",
+    "timestamp": "2026-08-01T20:10:34.000Z",
+    "statusClassification": "[EMPIRICALLY VERIFIED AUDIT - BEM CSS CLASS MAP EXTACTED]",
+    "totalBlocksCount": 16,
+    "totalElementsCount": 94,
+    "totalModifiersCount": 13,
+    "totalUniqueBEMClasses": 123
+  },
+  "blocks": {
+    "c-application": 1,
+    "c-scenes": 1,
+    "c-slideshow": 1,
+    "c-slide": 6,
+    "c-slide-description": 5,
+    "c-keypoint": 8,
+    "c-slide-bottom": 5,
+    "c-slide-bottom-1": 1,
+    "c-slide-bottom-2": 1,
+    "c-slide-bottom-3": 1,
+    "c-slide-bottom-4": 1,
+    "c-slide-bottom-5": 1,
+    "c-nav": 1,
+    "c-modal": 1,
+    "c-video-controls": 1,
+    "c-header": 1
+  },
+  "sampleKeyElements": {
+    "c-slide-description__word": 408,
+    "c-slide__line": 25,
+    "c-slide__btn-play__icon__base__mask": 40,
+    "c-slide__icon-more__bar": 30,
+    "c-slide-bottom__slide__title": 22,
+    "c-slide__blink": 15,
+    "c-slide__icon-more": 15,
+    "c-slide__blink__label": 15,
+    "c-slide-bottom__link": 10,
+    "c-slide__btn-play": 10,
+    "c-header__btn-sound__bar": 10,
+    "c-keypoint__btn": 8,
+    "c-keypoint__circle": 8,
+    "c-keypoint__line": 8,
+    "c-keypoint__label": 8,
+    "c-keypoint__content": 8
+  },
+  "modifiers": {
+    "c-slide__gradient--base": 6,
+    "c-slide__gradient--overlay": 5,
+    "c-slide__blink--bis": 5,
+    "c-slide-bottom--1": 1,
+    "c-slide-bottom--2": 1,
+    "c-slide-bottom--3": 1,
+    "c-slide-bottom--4": 1,
+    "c-slide-bottom--5": 1,
+    "c-slide-bottom__arrow--top": 4,
+    "c-slide-bottom__arrow--bottom": 4,
+    "c-slideshow__control--right": 1,
+    "c-slideshow__control__line--before": 1,
+    "c-slideshow__control__line--after": 2
+  }
+}

@@ -9,8 +9,14 @@ export default defineNuxtConfig({
   ],
 
   css: [
-    '~/assets/css/main.css'
+    '~/public/assets/css/main.css'
   ],
+
+  vue: {
+    compilerOptions: {
+      isCustomElement: (tag) => tag.startsWith('app-') || tag.startsWith('core-')
+    }
+  },
 
   vite: {
     plugins: [
@@ -20,7 +26,7 @@ export default defineNuxtConfig({
 
   app: {
     head: {
-      title: 'Red Bull Racing + Citrix | Scrollytelling Engine 2026',
+      title: 'Red Bull Racing + Citrix | This is how the future works',
       meta: [
         { charset: 'utf-8' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' },
@@ -28,13 +34,10 @@ export default defineNuxtConfig({
         { name: 'theme-color', content: '#0B101E' }
       ],
       link: [
-        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
+        { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }
       ]
     }
   },
 
-  typescript: {
-    strict: true,
-    typeCheck: false
-  }
+  compatibilityDate: '2026-08-01'
 });

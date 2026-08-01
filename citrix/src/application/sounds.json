@@ -1,0 +1,13 @@
+[
+  { "id": "ambiant-level-1", "src": "/assets/medias/sounds/ambiant-level-1.mp3", "loop": true, "volume": 0.4 },
+  { "id": "ambiant-level-2", "src": "/assets/medias/sounds/ambiant-level-2.mp3", "loop": true, "volume": 0.4 },
+  { "id": "play-video", "src": "/assets/medias/sounds/play-video.mp3", "loop": false, "volume": 1.0 },
+  { "id": "nav-over", "src": "/assets/medias/sounds/nav-over.mp3", "loop": false, "volume": 0.6 },
+  { "id": "tick", "src": "/assets/medias/sounds/tick.mp3", "loop": false, "volume": 0.8 },
+  { "id": "tick-reverb", "src": "/assets/medias/sounds/tick-reverb.mp3", "loop": false, "volume": 0.8 },
+  { "id": "slide-01", "src": "/assets/medias/sounds/slide-01.mp3", "loop": false, "volume": 0.7 },
+  { "id": "slide-02", "src": "/assets/medias/sounds/slide-02.mp3", "loop": false, "volume": 0.7 },
+  { "id": "slide-03", "src": "/assets/medias/sounds/slide-03.mp3", "loop": false, "volume": 0.7 },
+  { "id": "slide-04", "src": "/assets/medias/sounds/slide-04.mp3", "loop": false, "volume": 0.7 },
+  { "id": "slide-05", "src": "/assets/medias/sounds/slide-05.mp3", "loop": false, "volume": 0.7 }
+]

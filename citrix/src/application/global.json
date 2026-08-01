@@ -1,0 +1,313 @@
+[
+  {
+    "title": "<span>How</span> <span>do</span> <span>you</span> <span>power</span><br><span>the</span> <span>new</span> <span>mobile</span> <span>workforce?</span>",
+    "label": "Home",
+    "gradientOpacity": 0,
+    "slug": "/",
+    "subtitle": "How it works",
+    "btnLabel": "Inside the car",
+    "description": "Citrix is helping Red Bull Racing reimagine how they work at the track, the garage, the factory and everywhere in between. This is how the future works."
+  },
+  {
+    "title": "On race day",
+    "label": "On race day",
+    "gradientOpacity": 0.5,
+    "slug": "/on-race-day",
+    "soundId": "slide-01",
+    "video": {
+      "youtubeID": "Vgtj1TqGxG8",
+      "path": "8/8373;81692;8081",
+      "name": "JM_Citrix_RBR_Microsite_On_Race_Day_Video_Play"
+    },
+    "poster": "/assets/medias/images/scene.jpg",
+    "subtitle": "How it works",
+    "btnLabel": "Inside the car",
+    "description": "The Red Bull Racing cars are instrumented with over 100 sensors streaming data in real time. Citrix helps engineers access these live telemetry feeds from anywhere in the world—informing hundreds of decisions on race day and modifications for the next one.",
+    "keypoints": [
+      {
+        "label": "100 sensors",
+        "content": "Track everything from air pressure to brake temperature to suspension loads.",
+        "position": [
+          75,
+          70
+        ],
+        "color": "gray-light"
+      }
+    ],
+    "content": {
+      "bottomComponent": "app-slide-bottom-1",
+      "headline": "Driving performance with",
+      "btnBackTo": "<span>Back&nbsp;</span><span>to&nbsp;</span><span>Race&nbsp;</span><span>Day</span>",
+      "title": "efficient data access",
+      "subtitle": "See how the team uses data to analyze, model and design the car for optimal performance.",
+      "video": {
+        "youtubeID": "UM5PweOXX7I",
+        "path": "8/8373;81697;8081",
+        "name": "JM_Citrix_RBR_Microsite_Race_Day_Tech_Story_Video_Play"
+      },
+      "link": {
+        "label": "Citrix HDX Technology",
+        "href": "https://www.citrix.com/virtualization/hdx/"
+      },
+      "slides": [
+        {
+          "title": "Complex system",
+          "description": "Each Red Bull Racing car has over 100,000 individual components."
+        },
+        {
+          "title": "Telemetry Data",
+          "description": "Over the course of a race weekend, the team transmits around 400GB of data to engineers at the track and factory."
+        },
+        {
+          "title": "Data virtualization",
+          "description": "The team uses a Citrix VDI to optimize the usage of the network to allow engineers back at HQ to access gigabytes of data in near real time."
+        }
+      ]
+    }
+  },
+  {
+    "title": "Trackside",
+    "label": "Trackside",
+    "gradientOpacity": 0.4,
+    "slug": "/trackside",
+    "soundId": "slide-02",
+    "video": {
+      "youtubeID": "BIUZfY0WZdg",
+      "path": "8/8373;81693;8081",
+      "name": "JM_Citrix_RBR_Microsite_How_It_Works_Video_Play"
+    },
+    "poster": "/assets/medias/images/scene.jpg",
+    "subtitle": "How it works",
+    "btnLabel": "Inside the garage",
+    "description": "Using Citrix, engineers at the circuit can access graphically intensive 3D CAD data remotely. This allows them to work on car setup with new components, optimize the build, make key decisions faster and drive track performance.",
+    "keypoints": [
+      {
+        "label": "2 cars",
+        "content": "The Red Bull Racing team assembles and services two cars each race weekend.",
+        "position": [
+          50,
+          40
+        ],
+        "color": "gray-light"
+      }
+    ],
+    "content": {
+      "bottomComponent": "app-slide-bottom-2",
+      "headline": "Heavyweight applications",
+      "btnBackTo": "<span>Back&nbsp;</span><span>to&nbsp;</span><span>Trackside</span>",
+      "title": "anywhere",
+      "subtitle": "See how engineers at the track use rich CAD data to make informed setup decisions.",
+      "video": {
+        "youtubeID": "YqldFVnLfQ4",
+        "path": "8/8373;81698;8081",
+        "name": "JM_Citrix_RBR_Microsite_Trackside_Tech_Story_Video_Play"
+      },
+      "link": {
+        "label": "Citrix XenDesktop",
+        "href": "https://www.citrix.com/products/xenapp-xendesktop/"
+      },
+      "slides": [
+        {
+          "title": "Rich 3D models",
+          "description": "Using Red Bull Racing’s CAD software, engineers can analyze designs and gain insights into the car build at the track."
+        },
+        {
+          "title": "Detailed look",
+          "description": "With VDIs at the track, engineers can view individual components in the team’s sophisticated CAD software and visualize how they all fit together—even brand new designs about to race for the first time."
+        },
+        {
+          "title": "Mission critical decisions",
+          "description": "Reliable, high-quality access to CAD models at the track empowers Red Bull Racing engineers to make crucial decisions with confidence."
+        }
+      ]
+    }
+  },
+  {
+    "title": "Back at HQ",
+    "label": "Back at HQ",
+    "gradientOpacity": 0.3,
+    "slug": "/back-at-hq",
+    "soundId": "slide-03",
+    "video": {
+      "youtubeID": "lUj-8Ayslhc",
+      "path": "8/8373;81694;8081",
+      "name": "JM_Citrix_RBR_Microsite_Back_at_HQ_Video_Play"
+    },
+    "poster": "/assets/medias/images/scene.jpg",
+    "subtitle": "How it works",
+    "btnLabel": "Inside AT&T Operations Room",
+    "description": "The cars generate mountains of data. Citrix helps engineers at HQ in the UK view live telemetry feeds from the cars in near real time. This allows for more eyes on the data, helping the team optimize configurations and race tactics, and informing the future design process.",
+    "keypoints": [
+      {
+        "label": "More specialists",
+        "content": "Engineers from a variety of disciplines can analyze the performance of specific parts during a race.",
+        "position": [
+          74,
+          64
+        ],
+        "color": "gray-light"
+      },
+      {
+        "label": "Near real time",
+        "content": "Citrix VDI optimizes the usage of the network, so the team can do more with the data in less time.",
+        "position": [
+          30,
+          30
+        ],
+        "color": "gray-light"
+      }
+    ],
+    "content": {
+      "bottomComponent": "app-slide-bottom-3",
+      "headline": "Supporting data-driven",
+      "btnBackTo": "<span>Back&nbsp;</span><span>to&nbsp;</span><span>HQ</span>",
+      "title": "decision-making",
+      "subtitle": "See how specialist teams at headquarters use data to help predict and improve race outcomes.",
+      "video": {
+        "youtubeID": "DUMJ7J91XH4",
+        "path": "8/8373;81699;8081",
+        "name": "JM_Citrix_RBR_Microsite__HQ_Tech_Story_Play_Video"
+      },
+      "link": {
+        "label": "Citrix Receiver ",
+        "href": "https://www.citrix.com/products/receiver/"
+      },
+      "slides": [
+        {
+          "title": "Data mining",
+          "description": "Specialists at headquarters can focus on one specific aspect of the car, like temperature management or downforce levels. This allows them to dig deeper through the data and deliver a more thorough analysis for the team at the track."
+        },
+        {
+          "title": "Comparative data",
+          "description": "Data engineers monitor telemetry feeds for practically everything—car speed, stability, aerodynamics, tire pressure—and make hundreds of decisions during the race."
+        }
+      ]
+    }
+  },
+  {
+    "title": "All season",
+    "label": "All season",
+    "gradientOpacity": 0.8,
+    "slug": "/all-season",
+    "soundId": "slide-04",
+    "video": {
+      "youtubeID": "w8k2ikMO6gM",
+      "path": "8/8373;81695;8081",
+      "name": "JM_Citrix_RBR_Microsite_All_Season_Video_Play"
+    },
+    "poster": "/assets/medias/images/scene.jpg",
+    "subtitle": "How it works",
+    "btnLabel": "Inside the factory",
+    "description": "The cars are evolving prototypes, so the team needs to review, design and optimize continuously. Citrix gives Red Bull Racing flexibility to work whenever, wherever—so they can work on building a better car week after week.",
+    "keypoints": [
+      {
+        "label": "30,000 design updates",
+        "content": "Over 30,000 modifications are made to the car over the course of a race season.",
+        "position": [
+          74,
+          30
+        ],
+        "color": "gray-light"
+      },
+      {
+        "label": "5 months",
+        "content": "The team designs and builds the cars from scratch every year in just 5 months.",
+        "position": [
+          20,
+          30
+        ],
+        "color": "gray-light"
+      }
+    ],
+    "content": {
+      "bottomComponent": "app-slide-bottom-4",
+      "headline": "Innovation",
+      "btnBackTo": "<span>Back&nbsp;</span><span>to&nbsp;</span><span>All&nbsp;</span><span>season</span>",
+      "title": "never sleeps",
+      "subtitle": "See how Red Bull Racing is continuously innovating across the business—from engineering to data analysis to infrastructure.",
+      "video": {
+        "youtubeID": "uVujxjYNcEs",
+        "path": "8/8373;81700;8081",
+        "name": "JM_Citrix_RBR_Microsite_Design_Tech_Story_Video_Play"
+      },
+      "link": {
+        "label": "Citrix Netscaler",
+        "href": "https://www.citrix.com/products/netscaler-adc/"
+      },
+      "slides": [
+        {
+          "title": "Full Car Visualization",
+          "description": "Chief engineers use full car visualizations to review designs throughout the season. Since the car is constantly evolving, these key decision makers need access to rich models and tools everywhere they go."
+        }
+      ],
+      "keypoints": [
+        {
+          "label": "Suspension",
+          "content": ""
+        }
+      ]
+    }
+  },
+  {
+    "title": "Beyond the podium",
+    "label": "Beyond the podium",
+    "gradientOpacity": 0.4,
+    "slug": "/beyond-the-podium",
+    "soundId": "slide-05",
+    "video": {
+      "youtubeID": "Qo5vJNAP1e0",
+      "path": "8/8373;81696;8081",
+      "name": "JM_Citrix_RBR_Microsite_Race_Podium_Video_Play"
+    },
+    "poster": "/assets/medias/images/scene.jpg",
+    "subtitle": "How it works",
+    "btnLabel": "To future possibilities",
+    "description": "The Red Bull Racing cars and team have a lot of moving parts. And they all move fast. Citrix allows the team to work seamlessly all over the world, driving collaboration, innovation and performance—on and off the track.",
+    "keypoints": [
+      {
+        "label": "20 countries",
+        "content": "This year, the team will travel to 20 countries in a span of 9 months.",
+        "position": [
+          65,
+          50
+        ],
+        "color": "white"
+      },
+      {
+        "label": "10 years",
+        "content": "Red Bull Racing and Citrix have been working together since 2007.",
+        "position": [
+          20,
+          20
+        ],
+        "color": "gray-light"
+      }
+    ],
+    "content": {
+      "bottomComponent": "app-slide-bottom-5",
+      "headline": "Virtually anything’s",
+      "btnBackTo": "<span>Back&nbsp;</span><span>to&nbsp;</span><span>Podium</span>",
+      "title": "possible",
+      "subtitle": "Once the season ends, the next one begins. See how the team keeps one eye on the race, and one on future technologies.",
+      "video": {
+        "youtubeID": "n1HF5gMx1Ac",
+        "path": "8/8373;81701;8081",
+        "name": "JM_Citrix_RBR_Microsite_Podium_Tech_Story_Video_Play"
+      },
+      "link": {
+        "label": "Citrix XenServer",
+        "href": "https://www.citrix.com/products/xenserver/"
+      },
+      "slides": [
+        {
+          "title": "2018 season",
+          "description": "The team will travel to 21 circuits in 2018, including the first French Grand Prix in 10 years."
+        },
+        {
+          "title": "Red Bull Racing operations",
+          "description": "Red Bull Racing employees can work anytime, anywhere securely—whether they’re at HQ, a test track or a Grand Prix."
+        }
+      ]
+    }
+  }
+]

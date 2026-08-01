@@ -1,0 +1,23 @@
+{
+  "manifestMetadata": {
+    "auditorVersion": "2026.2.0-per-vertex",
+    "timestamp": "2026-08-01T20:06:33.000Z",
+    "statusClassification": "[EMPIRICALLY VERIFIED AUDIT - PER-VERTEX GEOMETRY EXTACTED]",
+    "totalActs": 6,
+    "totalSubMeshesCount": 97
+  },
+  "actGeometrySummary": [
+    { "actIndex": 0, "actName": "Act_0", "subMeshCount": 13, "sourceBlendFile": "scene-00-1.16-export.blend" },
+    { "actIndex": 1, "actName": "Act_1", "subMeshCount": 24, "sourceBlendFile": "scene-01-1.14-export.blend" },
+    { "actIndex": 2, "actName": "Act_2", "subMeshCount": 14, "sourceBlendFile": "scene-02-1.12-export.blend" },
+    { "actIndex": 3, "actName": "Act_3", "subMeshCount": 10, "sourceBlendFile": "scene-03-1.9-export.blend" },
+    { "actIndex": 4, "actName": "Act_4", "subMeshCount": 27, "sourceBlendFile": "scene-04-1.18-export.blend" },
+    { "actIndex": 5, "actName": "Act_5", "subMeshCount": 9, "sourceBlendFile": "scene-05-3.5-export.blend" }
+  ],
+  "samplePerVertexMetrics": {
+    "act0_car_back": { "vertexCount": 4, "faceCount": 2, "boundingBoxMin": [-1.2703, 0, 0.5563], "boundingBoxMax": [0.7795, 0, 1.9091], "boundingSphereRadius": 1.228, "first3Vertices": [[-1.2612, 0, 1.9091], [0.7602, 0, 0.5563], [0.7795, 0, 1.9091]] },
+    "act0_road": { "vertexCount": 70, "faceCount": 116, "boundingBoxMin": [-6.1296, -3.0864, -1.8672], "boundingBoxMax": [6.213, 4, 0.8095], "boundingSphereRadius": 7.2409, "first3Vertices": [[0.2313, -2.7369, -0.0623], [-0.0867, -2.368, -0.0151], [-0.0242, -2.8242, -0.069]] },
+    "act1_car_body": { "vertexCount": 34, "faceCount": 40, "boundingBoxMin": [-0.9374, -2.2453, -0.7834], "boundingBoxMax": [0.9741, 1.9651, 0.4153], "boundingSphereRadius": 2.1988, "first3Vertices": [[0.0345, -1.2716, 0.0731], [-0.2609, -0.5808, -0.0069], [-0.365, -1.2011, 0.0756]] },
+    "act4_walls": { "vertexCount": 79, "faceCount": 115, "boundingBoxMin": [-19.0399, -10.515, -0.4964], "boundingBoxMax": [21.042, 83.7961, 14.6906], "boundingSphereRadius": 51.0171, "first3Vertices": [[-6.4247, -10.515, -0.4964], [-3.3152, -8.4826, -0.4654], [-7.2132, -8.702, -0.4654]] }
+  }
+}

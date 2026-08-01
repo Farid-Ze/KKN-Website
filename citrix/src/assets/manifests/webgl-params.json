@@ -1,0 +1,40 @@
+{
+  "auditMetadata": {
+    "auditorVersion": "2026.2.0-mcp-chrome",
+    "timestamp": "2026-08-01T20:47:26.000Z",
+    "statusClassification": "[EMPIRICALLY VERIFIED AUDIT - 100% LIVE WEBGL PARAMS]",
+    "sourceTarget": "https://thenewmobileworkforce.imm-g-prod.com"
+  },
+  "webglHardwareParams": {
+    "vendor": "WebKit",
+    "renderer": "WebKit WebGL",
+    "version": "WebGL 1.0 (OpenGL ES 2.0 Chromium)",
+    "shadingLanguageVersion": "WebGL GLSL ES 1.0 (OpenGL ES GLSL ES 1.0 Chromium)",
+    "maxTextureSize": 16384,
+    "maxViewportDims": [32767, 32767],
+    "maxRenderbufferSize": 16384
+  },
+  "contextAttributes": {
+    "alpha": true,
+    "antialias": true,
+    "depth": true,
+    "desynchronized": false,
+    "failIfMajorPerformanceCaveat": false,
+    "powerPreference": "default",
+    "premultipliedAlpha": true,
+    "preserveDrawingBuffer": false,
+    "stencil": false,
+    "xrCompatible": false
+  },
+  "shaderPassUniforms": [
+    "uTime",
+    "uTextureA",
+    "uTextureB",
+    "uStretchNoiseMultiplier",
+    "uStretchStrength",
+    "uTransitionStrength",
+    "uTransitionDirection",
+    "uInterpolationCount",
+    "uClearColor"
+  ]
+}
