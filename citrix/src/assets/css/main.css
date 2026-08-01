@@ -1,0 +1,79 @@
+/* ==========================================================================
+   Design Token CSS Primitives — Red Bull Racing + Citrix Scrollytelling 2026
+   ========================================================================== */
+
+@font-face {
+  font-family: 'NettoOT';
+  src: url('/assets/fonts/NettoOT.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'NettoOffc-Black';
+  src: url('/assets/fonts/NettoOffc-Black.woff') format('woff');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'TheinhardtReg';
+  src: url('/assets/fonts/TheinhardtReg.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'TheinhardtMed';
+  src: url('/assets/fonts/TheinhardtMed.woff') format('500');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  /* Brand Palette */
+  --color-brand-teal-deep: #0E2B2D;
+  --color-brand-copper-gold: #C38C5C;
+  --color-brand-obsidian-space: #0B101E;
+
+  /* Neutral Palette */
+  --color-neutral-white: #FFFFFF;
+  --color-neutral-slate-gray: #8E9DAE;
+
+  /* Typography Tokens */
+  --font-family-heading: 'NettoOT', 'Outfit', sans-serif;
+  --font-family-body: 'TheinhardtReg', 'Roboto', sans-serif;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: var(--color-brand-obsidian-space);
+  color: var(--color-neutral-white);
+  font-family: var(--font-family-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

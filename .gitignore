@@ -1,0 +1,20 @@
+# Deprecated Legacy Codebase
+citrix_deprecated/
+
+# Dependencies & Build Outputs
+node_modules/
+.nuxt/
+.output/
+dist/
+*.log
+
+# Environment Variables
+.env
+.env.*
+!.env.example
+
+# OS & IDE Files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

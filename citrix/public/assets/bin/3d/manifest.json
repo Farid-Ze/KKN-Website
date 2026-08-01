@@ -1,0 +1,114 @@
+{
+  "version": "2026.1",
+  "format": "glTF 2.0 Binary (.glb) + KHR_draco_mesh_compression + KHR_mesh_quantization",
+  "generator": "UNIKOM KKN 2026 Asset Transformation Pipeline",
+  "generatedAt": "2026-07-30T17:11:30.625Z",
+  "targetMetrics": {
+    "dracoBandwidthReductionTarget": "87-89%",
+    "gpuVramTranscodeTarget": "KTX2 Basis Universal ASTC/ETC2"
+  },
+  "scenes": [
+    {
+      "id": 0,
+      "sceneName": "Act 1",
+      "meshCount": 15,
+      "vertexCount": 215,
+      "faceCount": 248,
+      "legacyJsonSizeBytes": 19153,
+      "legacyJsonSizeFormatted": "18.7 KB",
+      "gltfBinarySizeBytes": 14716,
+      "gltfBinarySizeFormatted": "14.4 KB",
+      "bandwidthSavingsVs2017Json": "23.2%",
+      "estimatedGpuVramKb": 5,
+      "extensionsRequired": [
+        "KHR_mesh_quantization"
+      ],
+      "status": "OPTIMIZED_2026_BINARY"
+    },
+    {
+      "id": 1,
+      "sceneName": "Act 2",
+      "meshCount": 26,
+      "vertexCount": 375,
+      "faceCount": 488,
+      "legacyJsonSizeBytes": 35802,
+      "legacyJsonSizeFormatted": "35.0 KB",
+      "gltfBinarySizeBytes": 25004,
+      "gltfBinarySizeFormatted": "24.4 KB",
+      "bandwidthSavingsVs2017Json": "30.2%",
+      "estimatedGpuVramKb": 9,
+      "extensionsRequired": [
+        "KHR_mesh_quantization"
+      ],
+      "status": "OPTIMIZED_2026_BINARY"
+    },
+    {
+      "id": 2,
+      "sceneName": "Act 3",
+      "meshCount": 16,
+      "vertexCount": 358,
+      "faceCount": 482,
+      "legacyJsonSizeBytes": 29274,
+      "legacyJsonSizeFormatted": "28.6 KB",
+      "gltfBinarySizeBytes": 19648,
+      "gltfBinarySizeFormatted": "19.2 KB",
+      "bandwidthSavingsVs2017Json": "32.9%",
+      "estimatedGpuVramKb": 8,
+      "extensionsRequired": [
+        "KHR_mesh_quantization"
+      ],
+      "status": "OPTIMIZED_2026_BINARY"
+    },
+    {
+      "id": 3,
+      "sceneName": "Act 4",
+      "meshCount": 13,
+      "vertexCount": 231,
+      "faceCount": 283,
+      "legacyJsonSizeBytes": 19787,
+      "legacyJsonSizeFormatted": "19.3 KB",
+      "gltfBinarySizeBytes": 13548,
+      "gltfBinarySizeFormatted": "13.2 KB",
+      "bandwidthSavingsVs2017Json": "31.5%",
+      "estimatedGpuVramKb": 5,
+      "extensionsRequired": [
+        "KHR_mesh_quantization"
+      ],
+      "status": "OPTIMIZED_2026_BINARY"
+    },
+    {
+      "id": 4,
+      "sceneName": "Act 5",
+      "meshCount": 30,
+      "vertexCount": 421,
+      "faceCount": 457,
+      "legacyJsonSizeBytes": 38293,
+      "legacyJsonSizeFormatted": "37.4 KB",
+      "gltfBinarySizeBytes": 29400,
+      "gltfBinarySizeFormatted": "28.7 KB",
+      "bandwidthSavingsVs2017Json": "23.2%",
+      "estimatedGpuVramKb": 9,
+      "extensionsRequired": [
+        "KHR_mesh_quantization"
+      ],
+      "status": "OPTIMIZED_2026_BINARY"
+    },
+    {
+      "id": 5,
+      "sceneName": "Act 6",
+      "meshCount": 12,
+      "vertexCount": 106,
+      "faceCount": 113,
+      "legacyJsonSizeBytes": 12544,
+      "legacyJsonSizeFormatted": "12.3 KB",
+      "gltfBinarySizeBytes": 9572,
+      "gltfBinarySizeFormatted": "9.3 KB",
+      "bandwidthSavingsVs2017Json": "23.7%",
+      "estimatedGpuVramKb": 2,
+      "extensionsRequired": [
+        "KHR_mesh_quantization"
+      ],
+      "status": "OPTIMIZED_2026_BINARY"
+    }
+  ]
+}
