@@ -59,19 +59,24 @@ export default {
       eventHub: eventHub
     };
   },
+  created: function() {
+    this.eventHub = eventHub;
+  },
   methods: {
     onToggleNav: function() {
-      if (this.$root && this.$root.isModalActive) {
-        this.$emit('toggle:modal');
-      } else {
-        this.$emit('toggle:nav');
+      if (this.eventHub) {
+        this.eventHub.$emit('toggle:nav');
       }
     },
     onToggleSound: function() {
-      this.$emit('toggle:sound');
+      if (this.eventHub) {
+        this.eventHub.$emit('toggle:sound');
+      }
     },
     onToggleBottomSlide: function() {
-      this.$emit('toggle:bottomSlide');
+      if (this.eventHub) {
+        this.eventHub.$emit('toggle:bottomSlide');
+      }
     },
     onBtnNavOver: function() {
       if (this.eventHub) {

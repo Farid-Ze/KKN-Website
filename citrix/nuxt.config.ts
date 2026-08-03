@@ -12,12 +12,6 @@ export default defineNuxtConfig({
     '~/public/assets/css/main.css'
   ],
 
-  vue: {
-    compilerOptions: {
-      isCustomElement: (tag) => tag.startsWith('app-') || tag.startsWith('core-')
-    }
-  },
-
   vite: {
     plugins: [
       vitePluginGlsl()

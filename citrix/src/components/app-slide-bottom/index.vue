@@ -94,6 +94,7 @@
 </template>
 
 <script>
+import { eventHub } from '../../mixins/eventHub';
 import AppSlideDescription from '../app-slide-description/index.vue';
 import AppSlideBottom1 from './components/act-1.vue';
 import AppSlideBottom2 from './components/act-2.vue';
@@ -129,6 +130,19 @@ export default {
       eventHub: null
     };
   },
+  created: function() {
+    this.eventHub = eventHub;
+  },
+  mounted: function() {
+    if (this.isActive) {
+      this.onActiveChange();
+    }
+  },
+  watch: {
+    isActive: function(val) {
+      this.onActiveChange();
+    }
+  },
   methods: {
     onActiveStepIndexChange: function() {
       if (this.isActive && this.scene && this.scene.goToStep) {
@@ -146,10 +160,8 @@ export default {
       var e = this;
       if (this.isActive) {
         this.activeStepIndex = 0;
-        setTimeout(function() {
-          e._isReady = true;
-          e.onChangeSlide();
-        }, 1000);
+        this._isReady = true;
+        this.onChangeSlide();
       } else {
         this.activeStepIndex = -1;
         this._isReady = false;
@@ -228,7 +240,7 @@ export default {
           this._isWheeling = false;
         }
 
-        if (!(this._isWheeling || Math.abs(-this.normalizeWheel(e).pixelY) < 20 || Date.now() - this._lastWheelTime < 800)) {
+        if (!(this._isWheeling || Math.abs(-this.normalizeWheel(e).pixelY) < 20 || Date.now() - this._lastWheelTime < 300)) {
           this._lastWheelTime = Date.now();
           this._wheelEndTimer = setTimeout(function() {
             clearTimeout(t.wheelTimer);
@@ -285,3 +297,58 @@ export default {
   }
 };
 </script>
+
+<style>
+.c-slide-bottom {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1000 !important;
+  pointer-events: auto;
+  color: #ffffff;
+}
+.c-slide-bottom * {
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+.c-slide-bottom__content {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  color: #ffffff;
+}
+.c-slide-bottom__headline {
+  color: #e62541 !important;
+  font-size: 1.1rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 2px !important;
+  margin-bottom: 8px !important;
+}
+.c-slide-bottom__title {
+  color: #ffffff !important;
+  font-size: 2.2rem !important;
+  line-height: 1.2 !important;
+  margin-bottom: 16px !important;
+}
+.c-slide-bottom__description {
+  color: rgba(255, 255, 255, 0.85) !important;
+  font-size: 1.1rem !important;
+  line-height: 1.5 !important;
+  margin-bottom: 24px !important;
+}
+.c-slide-bottom__slide {
+  display: none !important;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  transform: translateY(20px);
+}
+.c-slide-bottom__slide.is-active {
+  display: block !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: translateY(0) !important;
+}
+</style>

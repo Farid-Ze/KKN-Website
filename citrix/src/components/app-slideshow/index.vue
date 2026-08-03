@@ -112,8 +112,18 @@ export default {
     };
   },
   watch: {
-    slideIndex: function(val) {
-      this.onSlideIndexChange(val);
+    slideIndex: {
+      handler: function(val) {
+        this.activeIndex = typeof val === 'number' ? val : 0;
+        this.onSlideIndexChange(val);
+      },
+      immediate: true
+    }
+  },
+  mounted: function() {
+    this.activeIndex = typeof this.slideIndex === 'number' ? this.slideIndex : 0;
+    if (typeof window !== 'undefined') {
+      window.addEventListener('wheel', this.onMouseWheel, { passive: false });
     }
   },
   created: function() {
@@ -133,9 +143,20 @@ export default {
       window.addEventListener('keydown', this.onKeyDown);
     }
   },
+  beforeUnmount: function() {
+    if (typeof window !== 'undefined') {
+      window.removeEventListener('keydown', this.onKeyDown);
+      window.removeEventListener('wheel', this.onMouseWheel);
+    }
+    clearTimeout(this._switchInTimer);
+    clearTimeout(this._switchOutTimer);
+    clearTimeout(this._wheelTimer);
+    clearTimeout(this._wheelEndTimer);
+  },
   beforeDestroy: function() {
     if (typeof window !== 'undefined') {
       window.removeEventListener('keydown', this.onKeyDown);
+      window.removeEventListener('wheel', this.onMouseWheel);
     }
     clearTimeout(this._switchInTimer);
     clearTimeout(this._switchOutTimer);
@@ -218,23 +239,27 @@ export default {
         return;
       }
 
-      if (!this._isWheeling && Math.abs(i) >= 20 && (Date.now() - this._lastWheelTime >= 1000)) {
+      if (!this._isWheeling && Math.abs(i) >= 20 && (Date.now() - this._lastWheelTime >= 800)) {
         this._lastWheelTime = Date.now();
         this._wheelEndTimer = setTimeout(function() {
           clearTimeout(self.wheelTimer);
           self._isWheeling = false;
-        }, 2000);
+        }, 1500);
         this._isWheeling = true;
         this._isScrollFromWheel = true;
 
         if (i < 0) {
-          if (this.slideIndex === 0) {
-            this.onNextSlide();
-          } else {
+          if (this.activeIndex !== 0 && !this.isBottomSlideActive) {
             this.onToggleBottomSlide();
+          } else {
+            this.onNextSlide();
           }
-        } else if (i > 0 && this.isBottomSlideActive) {
-          this.onToggleBottomSlide();
+        } else if (i > 0) {
+          if (this.activeIndex !== 0 && this.isBottomSlideActive) {
+            this.onToggleBottomSlide();
+          } else {
+            this.onPrevSlide();
+          }
         }
       }
     },

@@ -59,10 +59,26 @@ export default {
       }
     },
     onClick: function() {},
+    tick: function() {
+      this.onEnterFrame();
+      this._rafId = requestAnimationFrame(this.tick);
+    },
     onEnterFrame: function() {
-      if (this.$root && !this.$root.isTouch && this.isActive && this.$root.background && this.$root.background.scenes && 0 === this.$root.background.scenes.currentLevel) {
-        if ('ready' === this.$root.background.state && this.$root.background.scenes.active && this.$root.background.scenes.active.keypoints && this.$root.background.scenes.active.keypoints.positions[this.index]) {
-          var pos = this.$root.background.scenes.active.keypoints.positions[this.index];
+      var bg = (typeof window !== 'undefined' && window.bg) || (this.$root && this.$root.background);
+      var mouse = (typeof window !== 'undefined' && window.mouse) || (this.$root && this.$root.mouse) || { x: 0, y: 0 };
+      var isTouch = (this.$root && this.$root.isTouch) || false;
+
+      if (!isTouch && this.isActive) {
+        var pos = null;
+        if (bg && bg.scenes && bg.scenes.active && bg.scenes.active.keypoints && bg.scenes.active.keypoints.positions && bg.scenes.active.keypoints.positions[this.index]) {
+          pos = bg.scenes.active.keypoints.positions[this.index];
+        } else if (this.content && this.content.position && Array.isArray(this.content.position)) {
+          pos = { x: this.content.position[0] / 100, y: this.content.position[1] / 100 };
+        } else if (this.position && Array.isArray(this.position)) {
+          pos = { x: this.position[0] / 100, y: this.position[1] / 100 };
+        }
+
+        if (pos && this.$el) {
           this.$el.style.transform = 'translateX(' + Math.round(100 * pos.x * 100) / 100 + 'vw) translateY(' + Math.round(100 * pos.y * 100) / 100 + 'vh) translateZ(0)';
         }
 
@@ -71,34 +87,48 @@ export default {
         if (!this._circle) this._circle = { x: 0, y: 0 };
         if (!this._label) this._label = { x: 0, y: 0 };
 
-        this._smoothMouse.x += 0.14 * (this.$root.mouse.x - this._smoothMouse.x);
-        this._smoothMouse.y += 0.14 * (this.$root.mouse.y - this._smoothMouse.y);
+        this._smoothMouse.x += 0.14 * (mouse.x - this._smoothMouse.x);
+        this._smoothMouse.y += 0.14 * (mouse.y - this._smoothMouse.y);
         this._angle = Math.atan2(this._smoothMouse.x - this._circle.x, -(this._smoothMouse.y - this._circle.y)) * (180 / Math.PI);
 
         if (this.$btn) this.$btn.style.transform = 'translateX(' + (10 * this._lineScale.smoothX).toFixed(2) + 'px) translateY(' + (10 * this._lineScale.smoothY).toFixed(2) + 'px) translateZ(0)';
         if (this.$line) this.$line.style.transform = 'rotate(' + this._angle.toFixed(2) + 'deg) scaleY(' + (1 * Math.max(Math.abs(this._lineScale.smoothX), Math.abs(this._lineScale.smoothY))).toFixed(2) + ') translateZ(0)';
         if (this.$circle) this.$circle.style.transform = 'scale(' + Math.round(100 * (1 - 0.2 * Math.max(Math.abs(this._lineScale.smoothX), Math.abs(this._lineScale.smoothY)))) / 100 + ') translateZ(0)';
 
-        if (this.$root.mouse.x > this._circle.x - this._boxSize && this.$root.mouse.x < this._circle.x + this._boxSize && this.$root.mouse.y > this._circle.y - this._boxSize && this.$root.mouse.y < this._circle.y + this._boxSize) {
-          this._lineScale.x = (this.$root.mouse.x - this._circle.x) / (this._boxSize || 1);
-          this._lineScale.y = (this.$root.mouse.y - this._circle.y) / (this._boxSize || 1);
+        if (mouse.x > this._circle.x - this._boxSize && mouse.x < this._circle.x + this._boxSize && mouse.y > this._circle.y - this._boxSize && mouse.y < this._circle.y + this._boxSize) {
+          this._lineScale.x = (mouse.x - this._circle.x) / (this._boxSize || 1);
+          this._lineScale.y = (mouse.y - this._circle.y) / (this._boxSize || 1);
           if (this.$content) this.$content.style.transform = 'translateX(' + Math.round(100 * (this._smoothMouse.x - this._label.x)) / 100 + 'px) translateY(' + Math.round(100 * (this._smoothMouse.y - this._label.y)) / 100 + 'px) translateZ(0)';
           if (!this.isKeyPointActive) {
             this.isKeyPointActive = true;
-            if (!this.$root.isSceneScaled) {
+            if (this.$el && (!this.$root || !this.$root.isSceneScaled)) {
               this.$el.classList.add('is-active');
             }
           }
-        } else if (this.isKeyPointActive && !this.$root.isSceneScaled) {
+        } else if (this.isKeyPointActive && (!this.$root || !this.$root.isSceneScaled)) {
           this._lineScale.x = 0;
           this._lineScale.y = 0;
           this.isKeyPointActive = false;
-          this.$el.classList.remove('is-active');
+          if (this.$el) {
+            this.$el.classList.remove('is-active');
+          }
         }
         this._lineScale.smoothX += 0.1 * (this._lineScale.x - this._lineScale.smoothX);
         this._lineScale.smoothY += 0.1 * (this._lineScale.y - this._lineScale.smoothY);
       }
     }
+  },
+  mounted: function() {
+    if (this.$el) {
+      this.$btn = this.$el.querySelector('.js-btn');
+      this.$circle = this.$el.querySelector('.js-circle');
+      this.$line = this.$el.querySelector('.js-line');
+      this.$content = this.$el.querySelector('.js-content');
+    }
+    this._rafId = requestAnimationFrame(this.tick);
+  },
+  beforeUnmount: function() {
+    if (this._rafId) cancelAnimationFrame(this._rafId);
   }
 };
 </script>

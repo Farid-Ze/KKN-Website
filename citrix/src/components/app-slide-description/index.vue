@@ -28,9 +28,18 @@ export default {
       return this.content ? this.content.split(' ') : [];
     }
   },
+  watch: {
+    isActive: {
+      handler: function(val) {
+        this.onActiveChange();
+      },
+      immediate: true
+    }
+  },
   mounted: function() {
     this._timers = [];
     this.$words = this.$el ? this.$el.querySelectorAll('.js-word') : [];
+    this.onActiveChange();
   },
   methods: {
     onActiveChange: function() {
@@ -80,3 +89,11 @@ export default {
   }
 };
 </script>
+
+<style>
+.c-slide-description__word {
+  color: #ffffff !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+</style>

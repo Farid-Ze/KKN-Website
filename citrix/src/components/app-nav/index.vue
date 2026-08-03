@@ -20,7 +20,7 @@
           >
             <router-link :to="item.slug || '/'" class="t-link u-inline-block u-pad-y-md u-pad-y-sm@sm">
               <span class="t-text--sm t-text--black u-inline-block u-valign-top u-marg-r-sm">0{{ index }}</span>
-              <span class="c-nav__label t-text t-text--reg u-uppercase">{{ item.title || item.btnLabel }}</span>
+              <span class="c-nav__label t-text t-text--reg u-uppercase">{{ item.label || item.btnLabel }}</span>
             </router-link>
           </li>
         </ul>

@@ -4,7 +4,7 @@
  * Status: [EMPIRICALLY VERIFIED AUDIT - 100% EMPIRICAL LIVE DOM RENDER & METHODS VIA MCP CHROME]
 -->
 <template>
-  <div class="c-slide u-absolute u-pos-tl u-fit" @mouseup="onTouchEnd" @touchend="onTouchEnd" @touchstart="onTouchDown" @touchmove="onTouchMove">
+  <div class="c-slide u-absolute u-pos-tl u-fit" :class="{ 'is-bottom-active': isBottomSlideActive }" @mouseup="onTouchEnd" @touchend="onTouchEnd" @touchstart="onTouchDown" @touchmove="onTouchMove">
     <div class="c-slide-bottom__panel o-wrapper--panel u-fit u-bg--black"></div>
 
     <!-- Home Slide (Index 0) -->
@@ -102,7 +102,7 @@
               :is-active="isSlideActive"
               :position="topScene && topScene.keypoints && topScene.keypoints.positions ? topScene.keypoints.positions[i] : null"
               :content="kp"
-              v-show="!$root.isTouch"
+              v-show="!($root && $root.isTouch)"
             />
           </template>
         </div>
@@ -122,6 +122,7 @@
 </template>
 
 <script>
+import { eventHub } from '../../mixins/eventHub';
 import AppSlideDescription from '../app-slide-description/index.vue';
 import AppSlideBtnMore from '../app-slide-btn-more/index.vue';
 import AppSlideBottom from '../app-slide-bottom/index.vue';
@@ -154,18 +155,40 @@ export default {
       eventHub: null
     };
   },
+  created: function() {
+    this.eventHub = eventHub;
+  },
+  watch: {
+    activeIndex: {
+      handler: function(val) {
+        this.onActiveIndexChange();
+      },
+      immediate: true
+    }
+  },
+  mounted: function() {
+    this.onActiveIndexChange();
+  },
   methods: {
     onResize: function() {
-      if (this.$titleLabel) {
-        this.btnOffsetX = this.$titleLabel.offsetWidth;
-      }
-      this.slideDistance = this.$root.winWidth / 6;
+      var self = this;
+      this.$nextTick(function() {
+        if (self.$el) {
+          var label = self.$el.querySelector('.js-title-label') || self.$titleLabel;
+          if (label) {
+            self.btnOffsetX = label.offsetWidth;
+          }
+        }
+      });
+      var winW = typeof window !== 'undefined' ? window.innerWidth : 1920;
+      this.slideDistance = winW / 6;
       if (this.slideDistance > 350) {
         this.slideDistance = 350;
       }
     },
     onActiveIndexChange: function() {
       var e = this;
+      if (!this.$el) return;
       if (this.index === this.activeIndex) {
         this.$el.style.display = 'block';
         this.onResize();
@@ -173,20 +196,24 @@ export default {
         clearTimeout(this._leavingTimer);
         this._activeTimer = setTimeout(function() {
           e.isSlideActive = true;
-          e.$el.classList.remove('is-leaving');
-          e.$el.classList.add('is-active');
+          if (e.$el) {
+            e.$el.classList.remove('is-leaving');
+            e.$el.classList.add('is-active');
+          }
         }, 100);
       } else {
         clearTimeout(this._activeTimer);
         clearTimeout(this._leavingTimer);
         this.$el.classList.remove('is-active');
         this.isSlideActive = false;
-        if (!this.$root.isFirstLoading) {
+        if (this.$root && !this.$root.isFirstLoading) {
           this.$el.classList.add('is-leaving');
         }
         this._leavingTimer = setTimeout(function() {
-          e.$el.classList.remove('is-leaving');
-          e.$el.style.display = 'none';
+          if (e.$el) {
+            e.$el.classList.remove('is-leaving');
+            e.$el.style.display = 'none';
+          }
         }, 1000);
       }
     },
@@ -300,3 +327,25 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+.c-slide.is-bottom-active .c-slide__content {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+.c-slide-bottom-enter-active,
+.c-slide-bottom-leave-active {
+  transition: transform 1s cubic-bezier(0.77, 0, 0.175, 1), opacity 0.8s ease;
+}
+.c-slide-bottom-enter-from,
+.c-slide-bottom-leave-to {
+  transform: translateY(100%);
+  opacity: 0;
+}
+.c-slide-bottom-enter-to,
+.c-slide-bottom-leave-from {
+  transform: translateY(0%);
+  opacity: 1;
+}
+</style>

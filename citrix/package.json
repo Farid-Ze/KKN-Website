@@ -2,6 +2,9 @@
   "name": "citrix-scrollytelling-engine-2026",
   "private": true,
   "type": "module",
+  "engines": {
+    "node": ">=24.18.1"
+  },
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev",
@@ -20,11 +23,11 @@
     "mitt": "^3.0.1",
     "pinia": "^2.1.7",
     "three": "^0.160.0",
-    "vue": "^3.4.0",
+    "vue": "^3.5.40",
     "vue-router": "^4.3.0"
   },
   "devDependencies": {
-    "@types/node": "^20.11.0",
+    "@types/node": "^24.18.1",
     "@types/three": "^0.160.0",
     "nuxt": "^3.11.2",
     "typescript": "^5.3.3",
