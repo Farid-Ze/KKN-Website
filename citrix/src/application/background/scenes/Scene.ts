@@ -44,6 +44,7 @@ export class SubActScene {
     parallaxMover?: THREE.Vector3;
     transitionMover?: THREE.Vector3;
     navMover?: THREE.Vector3;
+    permanentMover?: THREE.Vector3;
   };
 
   public renderTarget: THREE.WebGLRenderTarget;
@@ -130,7 +131,13 @@ export class SubActScene {
   }
 
   public resize(): void {
-    this.camera.aspect = this.sizes.width / this.sizes.height;
+    const aspect = this.sizes.width / this.sizes.height;
+    let zoom = 1.2;
+    if (aspect > 1.5) {
+      zoom = aspect / 1.5 + 0.2;
+    }
+    this.camera.aspect = aspect;
+    this.camera.zoom = zoom;
     this.camera.updateProjectionMatrix();
 
     if (this.sizes.width <= 770) {
@@ -149,6 +156,12 @@ export class SubActScene {
       this.needsResize = false;
     }
 
+    if (this.camera.permanentMover) {
+      this.camera.permanentMover.x = 0.05 * Math.sin(0.0005 * this.time.elapsed);
+      this.camera.permanentMover.y = 0.05 * Math.sin(0.00042 * this.time.elapsed);
+      this.camera.permanentMover.z = 0.05 * Math.sin(0.00031 * this.time.elapsed);
+    }
+
     if (this.camera.parallaxMoverX && this.camera.parallaxMoverY && this.camera.parallaxMover && this.camera.originalPosition && this.camera.transitionMover && this.camera.navMover) {
       const targetX = this.camera.parallaxMoverX.clone().multiplyScalar(-this.parallax.x);
       const targetY = this.camera.parallaxMoverY.clone().multiplyScalar(-this.parallax.y);
@@ -157,9 +170,13 @@ export class SubActScene {
       this.camera.parallaxMover.y += 0.005 * (targetX.y + targetY.y - this.camera.parallaxMover.y) * this.time.delta;
       this.camera.parallaxMover.z += 0.005 * (targetX.z + targetY.z - this.camera.parallaxMover.z) * this.time.delta;
 
-      const posX = this.camera.originalPosition.x + this.camera.parallaxMover.x + this.camera.transitionMover.x + this.camera.navMover.x;
-      const posY = this.camera.originalPosition.y + this.camera.parallaxMover.y + this.camera.transitionMover.y + this.camera.navMover.y;
-      const posZ = this.camera.originalPosition.z + this.camera.parallaxMover.z + this.camera.transitionMover.z + this.camera.navMover.z;
+      const permX = this.camera.permanentMover ? this.camera.permanentMover.x : 0;
+      const permY = this.camera.permanentMover ? this.camera.permanentMover.y : 0;
+      const permZ = this.camera.permanentMover ? this.camera.permanentMover.z : 0;
+
+      const posX = this.camera.originalPosition.x + this.camera.parallaxMover.x + this.camera.transitionMover.x + permX + this.camera.navMover.x;
+      const posY = this.camera.originalPosition.y + this.camera.parallaxMover.y + this.camera.transitionMover.y + permY + this.camera.navMover.y;
+      const posZ = this.camera.originalPosition.z + this.camera.parallaxMover.z + this.camera.transitionMover.z + permZ + this.camera.navMover.z;
 
       this.camera.position.set(posX, posY, posZ);
       if (this.camera.target) {

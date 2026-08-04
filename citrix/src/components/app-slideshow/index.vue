@@ -92,6 +92,7 @@
 import AppSlide from '../app-slide/index.vue';
 import globalData from '../../application/global.json';
 import { eventHub } from '../../mixins/eventHub';
+import { soundManager } from '../../application/sound/index';
 
 export default {
   name: 'app-slideshow',
@@ -115,6 +116,8 @@ export default {
     slideIndex: {
       handler: function(val) {
         this.activeIndex = typeof val === 'number' ? val : 0;
+        soundManager.playSlideTransition(val);
+        soundManager.playAmbient(1);
         this.onSlideIndexChange(val);
       },
       immediate: true

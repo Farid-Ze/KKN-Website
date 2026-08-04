@@ -1,11 +1,11 @@
 {
-  "version": "2026.1",
-  "format": "glTF 2.0 Binary (.glb) + KHR_draco_mesh_compression + KHR_mesh_quantization",
-  "generator": "UNIKOM KKN 2026 Asset Transformation Pipeline",
-  "generatedAt": "2026-07-30T17:11:30.625Z",
+  "version": "2026.2-MESHOPT",
+  "format": "glTF 2.0 Binary (.glb) + EXT_meshopt_compression + KHR_mesh_quantization",
+  "generator": "UNIKOM KKN 2026 Asset Transformation Pipeline (Meshopt Engine)",
+  "generatedAt": "2026-08-03T20:29:16.473Z",
   "targetMetrics": {
-    "dracoBandwidthReductionTarget": "87-89%",
-    "gpuVramTranscodeTarget": "KTX2 Basis Universal ASTC/ETC2"
+    "meshoptBandwidthReductionTarget": "23-75%",
+    "gpuVramTranscodeTarget": "KTX2 Basis Universal ASTC/ETC2/BC7"
   },
   "scenes": [
     {
@@ -14,16 +14,17 @@
       "meshCount": 15,
       "vertexCount": 215,
       "faceCount": 248,
-      "legacyJsonSizeBytes": 19153,
+      "legacyJsonSizeBytes": 19152,
       "legacyJsonSizeFormatted": "18.7 KB",
-      "gltfBinarySizeBytes": 14716,
-      "gltfBinarySizeFormatted": "14.4 KB",
-      "bandwidthSavingsVs2017Json": "23.2%",
-      "estimatedGpuVramKb": 5,
+      "gltfBinarySizeBytes": 20356,
+      "gltfBinarySizeFormatted": "19.9 KB",
+      "bandwidthSavingsVs2017Json": "-6.3%",
+      "estimatedGpuVramKb": 9,
       "extensionsRequired": [
+        "EXT_meshopt_compression",
         "KHR_mesh_quantization"
       ],
-      "status": "OPTIMIZED_2026_BINARY"
+      "status": "OPTIMIZED_2026_MESHOPT_BINARY"
     },
     {
       "id": 1,
@@ -31,16 +32,17 @@
       "meshCount": 26,
       "vertexCount": 375,
       "faceCount": 488,
-      "legacyJsonSizeBytes": 35802,
+      "legacyJsonSizeBytes": 35793,
       "legacyJsonSizeFormatted": "35.0 KB",
-      "gltfBinarySizeBytes": 25004,
-      "gltfBinarySizeFormatted": "24.4 KB",
-      "bandwidthSavingsVs2017Json": "30.2%",
-      "estimatedGpuVramKb": 9,
+      "gltfBinarySizeBytes": 37208,
+      "gltfBinarySizeFormatted": "36.3 KB",
+      "bandwidthSavingsVs2017Json": "-4.0%",
+      "estimatedGpuVramKb": 15,
       "extensionsRequired": [
+        "EXT_meshopt_compression",
         "KHR_mesh_quantization"
       ],
-      "status": "OPTIMIZED_2026_BINARY"
+      "status": "OPTIMIZED_2026_MESHOPT_BINARY"
     },
     {
       "id": 2,
@@ -48,16 +50,17 @@
       "meshCount": 16,
       "vertexCount": 358,
       "faceCount": 482,
-      "legacyJsonSizeBytes": 29274,
+      "legacyJsonSizeBytes": 29267,
       "legacyJsonSizeFormatted": "28.6 KB",
-      "gltfBinarySizeBytes": 19648,
-      "gltfBinarySizeFormatted": "19.2 KB",
-      "bandwidthSavingsVs2017Json": "32.9%",
-      "estimatedGpuVramKb": 8,
+      "gltfBinarySizeBytes": 26204,
+      "gltfBinarySizeFormatted": "25.6 KB",
+      "bandwidthSavingsVs2017Json": "10.5%",
+      "estimatedGpuVramKb": 15,
       "extensionsRequired": [
+        "EXT_meshopt_compression",
         "KHR_mesh_quantization"
       ],
-      "status": "OPTIMIZED_2026_BINARY"
+      "status": "OPTIMIZED_2026_MESHOPT_BINARY"
     },
     {
       "id": 3,
@@ -67,14 +70,15 @@
       "faceCount": 283,
       "legacyJsonSizeBytes": 19787,
       "legacyJsonSizeFormatted": "19.3 KB",
-      "gltfBinarySizeBytes": 13548,
-      "gltfBinarySizeFormatted": "13.2 KB",
-      "bandwidthSavingsVs2017Json": "31.5%",
-      "estimatedGpuVramKb": 5,
+      "gltfBinarySizeBytes": 18824,
+      "gltfBinarySizeFormatted": "18.4 KB",
+      "bandwidthSavingsVs2017Json": "4.9%",
+      "estimatedGpuVramKb": 9,
       "extensionsRequired": [
+        "EXT_meshopt_compression",
         "KHR_mesh_quantization"
       ],
-      "status": "OPTIMIZED_2026_BINARY"
+      "status": "OPTIMIZED_2026_MESHOPT_BINARY"
     },
     {
       "id": 4,
@@ -82,16 +86,17 @@
       "meshCount": 30,
       "vertexCount": 421,
       "faceCount": 457,
-      "legacyJsonSizeBytes": 38293,
+      "legacyJsonSizeBytes": 38297,
       "legacyJsonSizeFormatted": "37.4 KB",
-      "gltfBinarySizeBytes": 29400,
-      "gltfBinarySizeFormatted": "28.7 KB",
-      "bandwidthSavingsVs2017Json": "23.2%",
-      "estimatedGpuVramKb": 9,
+      "gltfBinarySizeBytes": 40968,
+      "gltfBinarySizeFormatted": "40.0 KB",
+      "bandwidthSavingsVs2017Json": "-7.0%",
+      "estimatedGpuVramKb": 16,
       "extensionsRequired": [
+        "EXT_meshopt_compression",
         "KHR_mesh_quantization"
       ],
-      "status": "OPTIMIZED_2026_BINARY"
+      "status": "OPTIMIZED_2026_MESHOPT_BINARY"
     },
     {
       "id": 5,
@@ -99,16 +104,53 @@
       "meshCount": 12,
       "vertexCount": 106,
       "faceCount": 113,
-      "legacyJsonSizeBytes": 12544,
-      "legacyJsonSizeFormatted": "12.3 KB",
-      "gltfBinarySizeBytes": 9572,
-      "gltfBinarySizeFormatted": "9.3 KB",
-      "bandwidthSavingsVs2017Json": "23.7%",
-      "estimatedGpuVramKb": 2,
+      "legacyJsonSizeBytes": 12542,
+      "legacyJsonSizeFormatted": "12.2 KB",
+      "gltfBinarySizeBytes": 14728,
+      "gltfBinarySizeFormatted": "14.4 KB",
+      "bandwidthSavingsVs2017Json": "-17.4%",
+      "estimatedGpuVramKb": 4,
       "extensionsRequired": [
+        "EXT_meshopt_compression",
         "KHR_mesh_quantization"
       ],
-      "status": "OPTIMIZED_2026_BINARY"
+      "status": "OPTIMIZED_2026_MESHOPT_BINARY"
+    }
+  ],
+  "level2Models": [
+    {
+      "modelName": "f1-redbull",
+      "meshCount": 7,
+      "vertexCount": 68655,
+      "faceCount": 126002,
+      "legacy3dsSizeBytes": 1832531,
+      "legacy3dsSizeFormatted": "1.75 MB",
+      "gltfBinarySizeBytes": 1859424,
+      "gltfBinarySizeFormatted": "1815.8 KB",
+      "coLocatedPath": "/assets/medias/3d/level-2/car/f1-redbull.glb",
+      "bandwidthSavingsVs3ds": "-1.5%",
+      "extensionsRequired": [
+        "EXT_meshopt_compression",
+        "KHR_mesh_quantization"
+      ],
+      "status": "OPTIMIZED_2026_MESHOPT_BINARY"
+    },
+    {
+      "modelName": "differential",
+      "meshCount": 2,
+      "vertexCount": 54632,
+      "faceCount": 67160,
+      "legacy3dsSizeBytes": 1764550,
+      "legacy3dsSizeFormatted": "1.68 MB",
+      "gltfBinarySizeBytes": 1497584,
+      "gltfBinarySizeFormatted": "1462.5 KB",
+      "coLocatedPath": "/assets/medias/3d/level-2/differential/differential.glb",
+      "bandwidthSavingsVs3ds": "15.1%",
+      "extensionsRequired": [
+        "EXT_meshopt_compression",
+        "KHR_mesh_quantization"
+      ],
+      "status": "OPTIMIZED_2026_MESHOPT_BINARY"
     }
   ]
 }

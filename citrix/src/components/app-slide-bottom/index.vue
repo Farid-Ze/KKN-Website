@@ -199,6 +199,8 @@ export default {
       if (this.activeStepIndex > 0) {
         this.activeStepIndex -= 1;
         this.onChangeSlide();
+      } else if (this.eventHub) {
+        this.eventHub.$emit('toggle:bottomSlide');
       }
     },
     onNextSlide: function() {
@@ -208,6 +210,9 @@ export default {
       }
     },
     onChangeSlide: function() {
+      if (this.scene && typeof this.scene.goToStep === 'function') {
+        this.scene.goToStep(this.activeStepIndex);
+      }
       if (this.content && this.content.slides && this.activeStepIndex === this.content.slides.length - 1) {
         this.$el.classList.remove('is-first-step');
         this.$el.classList.add('is-last-step');

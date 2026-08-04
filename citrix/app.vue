@@ -4,15 +4,15 @@
  * Status: [EMPIRICALLY VERIFIED AUDIT - 100% EMPIRICAL FIX FOR VUE 3 THREE.JS PROXY MODELVIEWMATRIX ERROR VIA MARKRAW]
 -->
 <template>
-  <div id="app" class="c-application" :class="{ 'is-ready': isReady, 'is-modal-active': isModalActive, 'is-nav-active': isNavActive }">
+  <div id="app" class="c-application" :class="{ 'is-ready': isReady, 'is-modal-active': isModalActive, 'is-nav-active': isNavActive, 'is-bottom-slide-active': isBottomSlideActive }">
     <canvas id="webgl-canvas" ref="canvas" class="u-fixed u-pos-tl u-fit"></canvas>
 
     <div v-if="parityScore !== null" class="u-fixed u-pos-tr u-pad-xs u-bg--black t-text--xs" style="z-index: 9999; border: 1px solid #e62541; margin: 10px;">
       [AUDIT PARITY GUARANTEE]: {{ parityScore }} / {{ totalChecks }} CHECKS PASSED 100%
     </div>
 
-    <app-header :is-muted="isMuted" />
-    <app-nav :is-active="isNavActive" :content="globalContent" />
+    <app-header :is-muted="isMuted" :is-nav-active="isNavActive" @toggle:nav="onToggleNav" @toggle:sound="onToggleSound" />
+    <app-nav :is-active="isNavActive" :slide-index="slideIndex" :content="globalContent" @toggle:nav="onToggleNav" />
     <app-slideshow :background="background || undefined" :slide-index="slideIndex" :is-bottom-slide-active="isBottomSlideActive" />
     <app-modal-video v-if="isModalActive" :youtube-id="currentYoutubeId" @close="onToggleModal" />
     <app-sound-manager :is-muted="isMuted" :is-modal-active="isModalActive" :is-nav-active="isNavActive" />
@@ -52,6 +52,7 @@ const totalChecks = ref<number>(0);
 const globalContent = ref(globalData);
 const mouse = ref<{ x: number; y: number }>({ x: 0, y: 0 });
 let animationFrameId: number | null = null;
+let onResizeHandler: (() => void) | null = null;
 
 const route = useRoute();
 
@@ -77,8 +78,8 @@ const onMouseMove = (e: MouseEvent) => {
     (window as any).mouse = mouse.value;
   }
 
-  if (background.value && background.value.setCursorPosition) {
-    background.value.setCursorPosition(e.clientX, e.clientY);
+  if (background.value && typeof (background.value as any).setCursor === 'function') {
+    (background.value as any).setCursor(e.clientX, e.clientY);
   }
 };
 
@@ -98,14 +99,24 @@ const onUserActivation = () => {
   eventHub.$emit('sound:play', 'ambiant-level-2');
 };
 
+import { soundManager } from './src/application/sound/index';
+
 const onToggleNav = () => {
   onUserActivation();
   isNavActive.value = !isNavActive.value;
+  if (background.value && typeof (background.value as any).goFuzzy === 'function') {
+    if (isNavActive.value) {
+      (background.value as any).goFuzzy();
+    } else {
+      (background.value as any).leaveFuzzy();
+    }
+  }
 };
 
 const onToggleSound = () => {
   onUserActivation();
   isMuted.value = !isMuted.value;
+  soundManager.toggleMute(isMuted.value);
   if (isMuted.value) {
     eventHub.$emit('sound:mute');
   } else {
@@ -160,6 +171,15 @@ onMounted(() => {
         window.addEventListener('mousemove', onMouseMove);
         window.addEventListener('click', onUserActivation, { once: true });
 
+        eventHub.$on('toggle:nav', onToggleNav);
+        eventHub.$on('toggle:sound', onToggleSound);
+        eventHub.$on('toggle:modal', onToggleModal);
+        eventHub.$on('play:click', () => onToggleModal('Vgtj1TqGxG8'));
+
+        // Defek 2: Register resize handler
+        onResizeHandler = () => engine.resize();
+        window.addEventListener('resize', onResizeHandler);
+
         animationFrameId = requestAnimationFrame(animate);
         
         setTimeout(() => {
@@ -209,6 +229,10 @@ onUnmounted(() => {
   if (typeof window !== 'undefined') {
     window.removeEventListener('mousemove', onMouseMove);
     window.removeEventListener('click', onUserActivation);
+    if (onResizeHandler) {
+      window.removeEventListener('resize', onResizeHandler);
+      onResizeHandler = null;
+    }
   }
   if (background.value) {
     background.value.dispose();

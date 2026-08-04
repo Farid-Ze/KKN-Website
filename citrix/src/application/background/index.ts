@@ -6,14 +6,18 @@
 
 import * as THREE from 'three';
 import gsap from 'gsap';
-import { TDSLoader } from 'three/examples/jsm/loaders/TDSLoader.js';
-
+import { KTX2Loader } from 'three/examples/jsm/loaders/KTX2Loader.js';
+import { AssetLoaderManager } from './utilities/AssetLoaderManager';
 import meshVert from '../../assets/shaders/mesh_material.vert?raw';
 import meshFrag from '../../assets/shaders/mesh_material.frag?raw';
 import stretchVert from '../../assets/shaders/stretch_pass.vert?raw';
 import stretchFrag from '../../assets/shaders/stretch_pass.frag?raw';
 import { SubActScene1 } from './scenes/Scene1';
 import { SubActScene2 } from './scenes/Scene2';
+import { SubActScene3 } from './scenes/Scene3';
+import { SubActScene4 } from './scenes/Scene4';
+import { SubActScene5 } from './scenes/Scene5';
+import { ModelMeshLoader } from './utilities/ModelMeshLoader';
 
 export interface StretchShaderPassUniforms {
   uTime: { value: number };
@@ -27,6 +31,73 @@ export interface StretchShaderPassUniforms {
   uClearColor: { value: THREE.Color };
 }
 
+// [BASELINE 2017 LIVE FACTS] Camera parameters and 3D keypoint vectors extracted from live runtime
+export const LIVE_CAMERA_FACTS = [
+  {
+    fov: 31.8908,
+    originalPos: new THREE.Vector3(0, 0.424644, -10),
+    target: new THREE.Vector3(0.0012, 1.3936, 4.5677),
+    parallaxMoverX: new THREE.Vector3(1, 0, 0),
+    parallaxMoverY: new THREE.Vector3(0, 0.2, 0),
+    keypointVectors: [
+      new THREE.Vector3(-0.0738556, 2.76889, 4.10737)
+    ]
+  },
+  {
+    fov: 23.7414,
+    originalPos: new THREE.Vector3(2.09381, 2.87836, -16.6348),
+    target: new THREE.Vector3(-5.5567, 1.0968, 4.9075),
+    parallaxMoverX: new THREE.Vector3(1, 0, 0),
+    parallaxMoverY: new THREE.Vector3(0, 1, 0),
+    keypointVectors: [
+      new THREE.Vector3(-2.78063, 1.29952, -4.53626)
+    ]
+  },
+  {
+    fov: 56.3598,
+    originalPos: new THREE.Vector3(0.302623, 0.547072, -1.00515),
+    target: new THREE.Vector3(0.4023, 1.4959, 4.9781),
+    parallaxMoverX: new THREE.Vector3(0.2, 0, 0),
+    parallaxMoverY: new THREE.Vector3(0, 0.2, 0),
+    keypointVectors: [
+      new THREE.Vector3(0.0316912, 0.772218, 5.03414)
+    ]
+  },
+  {
+    fov: 33.8984,
+    originalPos: new THREE.Vector3(-3.43644, 5.18428, -5.44657),
+    target: new THREE.Vector3(-0.4525, 6.1958, 2.1969),
+    parallaxMoverX: new THREE.Vector3(1, 0, 0),
+    parallaxMoverY: new THREE.Vector3(0, 1, 0),
+    keypointVectors: [
+      new THREE.Vector3(-0.268938, 5.8567, 0.939497),
+      new THREE.Vector3(0.359645, 9.12322, 12.96)
+    ]
+  },
+  {
+    fov: 33.8984,
+    originalPos: new THREE.Vector3(-0.139569, 2.02596, -8.21282),
+    target: new THREE.Vector3(-0.1779, 3.3219, 10.2097),
+    parallaxMoverX: new THREE.Vector3(1, 0, 0),
+    parallaxMoverY: new THREE.Vector3(0, 1, 0),
+    keypointVectors: [
+      new THREE.Vector3(-0.958101, 1.97436, 3.86705),
+      new THREE.Vector3(0.598083, 4.50291, 9.54571)
+    ]
+  },
+  {
+    fov: 33.8984,
+    originalPos: new THREE.Vector3(-0.506125, 1.44246, -3.36892),
+    target: new THREE.Vector3(-0.5061, 1.4614, 4.0),
+    parallaxMoverX: new THREE.Vector3(0.3, 0, 0),
+    parallaxMoverY: new THREE.Vector3(0, 0.3, 0),
+    keypointVectors: [
+      new THREE.Vector3(0.142819, 2.03811, 3.07907),
+      new THREE.Vector3(-1.19139, 0.865051, 3.33855)
+    ]
+  }
+];
+
 export class WebGLBackgroundEngine {
   public quality: 'high' | 'medium' | 'low' = 'high';
   public isWebp: boolean = true;
@@ -34,6 +105,8 @@ export class WebGLBackgroundEngine {
   public pending: number | null = null;
   public canvas: HTMLCanvasElement | null = null;
   public renderer: THREE.WebGLRenderer | null = null;
+  public assetLoader: AssetLoaderManager = new AssetLoaderManager();
+  public ktx2Loader: KTX2Loader | null = null;
   public composer: any = null;
   public clearColor: THREE.Color = new THREE.Color(0x0b101e);
   public renderTargetA: THREE.WebGLRenderTarget | null = null;
@@ -55,11 +128,13 @@ export class WebGLBackgroundEngine {
     height: typeof window !== 'undefined' ? window.innerHeight : 1080
   };
 
-  public cursor: { x: number; y: number; normalX: number; normalY: number } = {
+  public cursor: { x: number; y: number; normalX: number; normalY: number; targetX: number; targetY: number } = {
     x: 0,
     y: 0,
     normalX: 0,
-    normalY: 0
+    normalY: 0,
+    targetX: 0,
+    targetY: 0
   };
 
   public parallax: { x: number; y: number } = { x: 0, y: 0 };
@@ -74,7 +149,8 @@ export class WebGLBackgroundEngine {
     values: { toLoad: 0, loaded: 0, finish: false }
   };
 
-  public resources: Record<string, any> = {};
+  public resources: Record<string, any> = { car: { model: {} }, differential: { model: {} } };
+  public meshLoader: ModelMeshLoader = new ModelMeshLoader();
   public isFuzzyTransitionning: boolean = false;
   private arrivingCallback: number | null = null;
   private endCallback: number | null = null;
@@ -223,9 +299,9 @@ export class WebGLBackgroundEngine {
 
   public scenes: {
     currentLevel: number;
-    levels: Array<Array<{ scene: THREE.Scene; camera: THREE.PerspectiveCamera; index: number; update?: () => void }>>;
-    active: { scene: THREE.Scene; camera: THREE.PerspectiveCamera; index: number; navMover?: THREE.Vector3; update?: () => void };
-    leaving: { scene: THREE.Scene; camera: THREE.PerspectiveCamera; index: number; update?: () => void } | null;
+    levels: Array<Array<{ scene: THREE.Scene; camera: THREE.PerspectiveCamera; index: number; renderTarget?: THREE.WebGLRenderTarget; keypoints?: { vectors: Array<{ position: THREE.Vector3 }>; positions: Array<THREE.Vector3> }; update?: () => void; enter?: Function; leave?: Function }>>;
+    active: { scene: THREE.Scene; camera: THREE.PerspectiveCamera; index: number; renderTarget?: THREE.WebGLRenderTarget; keypoints?: { vectors: Array<{ position: THREE.Vector3 }>; positions: Array<THREE.Vector3> }; navMover?: THREE.Vector3; update?: () => void; enter?: Function; leave?: Function };
+    leaving: { scene: THREE.Scene; camera: THREE.PerspectiveCamera; index: number; renderTarget?: THREE.WebGLRenderTarget; keypoints?: { vectors: Array<{ position: THREE.Vector3 }>; positions: Array<THREE.Vector3> }; update?: () => void; enter?: Function; leave?: Function } | null;
   } = {
     currentLevel: 0,
     levels: [[], []],
@@ -262,6 +338,34 @@ export class WebGLBackgroundEngine {
     this.setCursor(0, 0);
     this.setParallax();
     this.initLevels();
+
+    this.meshLoader.loadAll().then((res) => {
+      this.resources.car = res.car;
+      this.resources.differential = res.differential;
+      if (this.scenes && this.scenes.levels && this.scenes.levels[1]) {
+        for (const idx in this.scenes.levels[1]) {
+          const item = this.scenes.levels[1][idx];
+          if (item && (item as any).subScene) {
+            (item as any).subScene.resources = this.resources;
+            (item as any).subScene.start();
+          }
+        }
+      }
+    });
+  }
+
+  public loadSmartTexture(urlWithoutExtension: string, fallbackExt: 'webp' | 'jpg' = 'webp'): THREE.Texture {
+    const textureLoader = new THREE.TextureLoader();
+    if (this.renderer && !this.ktx2Loader) {
+      this.ktx2Loader = new KTX2Loader();
+      this.ktx2Loader.setTranscoderPath('/assets/basis/').detectSupport(this.renderer);
+    }
+
+    if (this.ktx2Loader) {
+      return textureLoader.load(`${urlWithoutExtension}.${this.isWebp ? 'webp' : fallbackExt}`);
+    }
+
+    return textureLoader.load(`${urlWithoutExtension}.${this.isWebp ? 'webp' : fallbackExt}`);
   }
 
   private initLevels(): void {
@@ -274,48 +378,171 @@ export class WebGLBackgroundEngine {
       return 'main-mesh-texture';
     };
 
-    const objectLoader = new THREE.ObjectLoader();
-
     // Populate Level 0 (2D Plane Mesh Scrollytelling Scenes using Authentic Blender Geometries & Atlas Maps)
     this.sceneConfigs.forEach(async (cfg, sceneIdx) => {
+      const fact = LIVE_CAMERA_FACTS[sceneIdx];
       const scene = new THREE.Scene();
-      const camera = new THREE.PerspectiveCamera(cfg.fov, 1920 / 889, 0.1, 1000);
-      camera.position.set(cfg.camPos[0], cfg.camPos[1], cfg.camPos[2]);
+      const initialAspect = this.sizes.width / this.sizes.height;
+      const initialZoom = initialAspect > 1.5 ? initialAspect / 1.5 + 0.2 : 1.2;
+
+      const camera = new THREE.PerspectiveCamera(fact.fov, initialAspect, 0.1, 1000);
+      camera.zoom = initialZoom;
+      camera.position.copy(fact.originalPos);
+      (camera as any).originalPosition = fact.originalPos.clone();
+      (camera as any).target = fact.target.clone();
+      (camera as any).parallaxMoverX = fact.parallaxMoverX.clone();
+      (camera as any).parallaxMoverY = fact.parallaxMoverY.clone();
+      (camera as any).parallaxMover = new THREE.Vector3(0, 0, 0);
+      (camera as any).transitionMover = new THREE.Vector3(0, 0, 0);
+      (camera as any).navMover = new THREE.Vector3(0, 0, 0);
+      (camera as any).permanentMover = new THREE.Vector3(0, 0, 0);
+      camera.lookAt(fact.target);
+      camera.updateProjectionMatrix();
+
+      const sceneItemTarget = new THREE.WebGLRenderTarget(this.sizes.width, this.sizes.height, {
+        minFilter: THREE.LinearFilter,
+        magFilter: THREE.LinearFilter,
+        format: THREE.RGBAFormat
+      });
+
       const sceneItem: any = {
         scene,
         camera,
         index: sceneIdx,
-        enter: (direction: string = 'down', speed: number = 1, delay: number = 0) => {
-          const startY = direction === 'down' ? -1 : 1;
-          scene.position.y = startY;
-          gsap.to(scene.position, { duration: speed, delay: delay, y: 0, ease: 'power2.out' });
+        renderTarget: sceneItemTarget,
+        baseCamPos: fact.originalPos.clone(),
+        keypoints: {
+          vectors: (fact.keypointVectors || []).map(pos => ({ position: pos.clone() })),
+          positions: []
         },
-        leave: (direction: string = 'down', speed: number = 1, delay: number = 0) => {
-          const targetY = direction === 'down' ? -1 : 1;
-          gsap.to(scene.position, { duration: speed, delay: delay, y: targetY, ease: 'power2.in' });
+        sizes: this.sizes,
+        needsResize: true,
+        cameraOptions: {
+          transitionStrengthX: 1.5,
+          transitionStrengthY: 1.0
+        },
+        enter: (direction: string = 'left', speed: number = 1, delay: number = 1, ease: string = 'power4.out') => {
+          (camera as any).navMover.set(0, 0, 0);
+          if (direction === 'left' || direction === 'right') {
+            const sign = direction === 'left' ? 1 : -1;
+            (camera as any).transitionMover.x = 1.5 * sign;
+            (camera as any).transitionMover.y = 0;
+            gsap.to((camera as any).transitionMover, { duration: speed, delay: delay, x: 0, ease: ease });
+          } else if (direction === 'down' || direction === 'up') {
+            const sign = direction === 'down' ? 1 : -1;
+            (camera as any).transitionMover.y = -1.0 * sign;
+            (camera as any).transitionMover.x = 0;
+            gsap.to((camera as any).transitionMover, { duration: speed, delay: delay, y: 0, ease: ease });
+          }
+        },
+        leave: (direction: string = 'left', speed: number = 1, delay: number = 0, ease: string = 'power4.in') => {
+          if (direction === 'left' || direction === 'right') {
+            const sign = direction === 'left' ? 1 : -1;
+            gsap.to((camera as any).transitionMover, { duration: speed, delay: delay, x: -1.5 * sign, ease: ease });
+          } else if (direction === 'down' || direction === 'up') {
+            const sign = direction === 'down' ? 1 : -1;
+            gsap.to((camera as any).transitionMover, { duration: speed, delay: delay, y: -1.0 * sign, ease: ease });
+          }
+        },
+        render: () => {
+          if (this.renderer) {
+            this.renderer.setRenderTarget(sceneItemTarget);
+            this.renderer.render(scene, camera);
+            this.renderer.setRenderTarget(null);
+          }
+        },
+        update: () => {
+          if (sceneItem.needsResize) {
+            const aspect = this.sizes.width / (this.sizes.height || 1);
+            let zoom = 1.2;
+            if (aspect > 1.5) {
+              zoom = aspect / 1.5 + 0.2;
+            }
+            camera.aspect = aspect;
+            camera.zoom = zoom;
+            camera.updateProjectionMatrix();
+            sceneItemTarget.setSize(this.sizes.width, this.sizes.height);
+            sceneItem.needsResize = false;
+          }
+
+          if ((camera as any).permanentMover) {
+            (camera as any).permanentMover.x = 0.05 * Math.sin(0.0005 * this.time.elapsed);
+            (camera as any).permanentMover.y = 0.05 * Math.sin(0.00042 * this.time.elapsed);
+            (camera as any).permanentMover.z = 0.05 * Math.sin(0.00031 * this.time.elapsed);
+          }
+
+          if ((camera as any).parallaxMoverX && (camera as any).parallaxMoverY && (camera as any).parallaxMover && (camera as any).originalPosition && (camera as any).transitionMover && (camera as any).navMover) {
+            const targetX = (camera as any).parallaxMoverX.clone().multiplyScalar(-this.parallax.x);
+            const targetY = (camera as any).parallaxMoverY.clone().multiplyScalar(-this.parallax.y);
+
+            (camera as any).parallaxMover.x += 0.005 * (targetX.x + targetY.x - (camera as any).parallaxMover.x) * this.time.delta;
+            (camera as any).parallaxMover.y += 0.005 * (targetX.y + targetY.y - (camera as any).parallaxMover.y) * this.time.delta;
+            (camera as any).parallaxMover.z += 0.005 * (targetX.z + targetY.z - (camera as any).parallaxMover.z) * this.time.delta;
+
+            const permX = (camera as any).permanentMover ? (camera as any).permanentMover.x : 0;
+            const permY = (camera as any).permanentMover ? (camera as any).permanentMover.y : 0;
+            const permZ = (camera as any).permanentMover ? (camera as any).permanentMover.z : 0;
+
+            const posX = (camera as any).originalPosition.x + (camera as any).parallaxMover.x + (camera as any).transitionMover.x + permX + (camera as any).navMover.x;
+            const posY = (camera as any).originalPosition.y + (camera as any).parallaxMover.y + (camera as any).transitionMover.y + permY + (camera as any).navMover.y;
+            const posZ = (camera as any).originalPosition.z + (camera as any).parallaxMover.z + (camera as any).transitionMover.z + permZ + (camera as any).navMover.z;
+
+            camera.position.set(posX, posY, posZ);
+            if ((camera as any).target) {
+              camera.lookAt((camera as any).target);
+            }
+          }
+
+          if (sceneItem.keypoints && sceneItem.keypoints.vectors) {
+            for (let i = 0; i < sceneItem.keypoints.vectors.length; i++) {
+              const vec = sceneItem.keypoints.vectors[i];
+              if (vec && vec.position) {
+                const projected = vec.position.clone().project(camera);
+                projected.x = 0.5 * (projected.x + 1);
+                projected.y = 0.5 * -(projected.y - 1);
+                sceneItem.keypoints.positions[i] = projected;
+              }
+            }
+          }
+
+          if (typeof sceneItem.render === 'function') {
+            sceneItem.render();
+          }
         }
       };
 
       this.scenes.levels[0].push(sceneItem);
 
+      let loadedScene: THREE.Object3D | null = null;
       try {
-        const response = await fetch(`/assets/medias/3d/level-1/scene-${sceneIdx}/main-mesh.json`);
-        const json = await response.json();
-        const loadedScene = objectLoader.parse(json);
+        loadedScene = await this.assetLoader.loadSceneMesh(sceneIdx);
+      } catch (err) {
+        console.error(`[CITRIX ERROR] Failed to load 3D mesh assets for scene ${sceneIdx}:`, err);
+      }
 
-        const defaultAtlas = textureLoader.load(`/assets/medias/3d/level-1/scene-${sceneIdx}/high/${getTexturePrefix(sceneIdx, 'default')}-default.${this.isWebp ? 'webp' : 'jpg'}`);
-        const alphaAtlas = textureLoader.load(`/assets/medias/3d/level-1/scene-${sceneIdx}/high/${getTexturePrefix(sceneIdx, 'default')}-alpha.${this.isWebp ? 'webp' : 'jpg'}`);
+      if (loadedScene) {
+        // Load atlas textures with ClampToEdge wrapping to prevent edge streaking (Defek 1)
+        const setClampWrapping = (tex: THREE.Texture) => {
+          tex.wrapS = THREE.ClampToEdgeWrapping;
+          tex.wrapT = THREE.ClampToEdgeWrapping;
+          return tex;
+        };
+        const defaultAtlas = setClampWrapping(textureLoader.load(`/assets/medias/3d/level-1/scene-${sceneIdx}/high/${getTexturePrefix(sceneIdx, 'default')}-default.${this.isWebp ? 'webp' : 'jpg'}`));
+        const alphaAtlas = setClampWrapping(textureLoader.load(`/assets/medias/3d/level-1/scene-${sceneIdx}/high/${getTexturePrefix(sceneIdx, 'default')}-alpha.${this.isWebp ? 'webp' : 'jpg'}`));
 
-        const carAtlas = (sceneIdx === 1 || sceneIdx === 4) ? textureLoader.load(`/assets/medias/3d/level-1/scene-${sceneIdx}/high/car-mesh-texture-default.${this.isWebp ? 'webp' : 'jpg'}`) : defaultAtlas;
-        const carAlphaAtlas = (sceneIdx === 1 || sceneIdx === 4) ? textureLoader.load(`/assets/medias/3d/level-1/scene-${sceneIdx}/high/car-mesh-texture-alpha.${this.isWebp ? 'webp' : 'jpg'}`) : alphaAtlas;
+        const carAtlas = (sceneIdx === 1 || sceneIdx === 4) ? setClampWrapping(textureLoader.load(`/assets/medias/3d/level-1/scene-${sceneIdx}/high/car-mesh-texture-default.${this.isWebp ? 'webp' : 'jpg'}`)) : defaultAtlas;
+        const carAlphaAtlas = (sceneIdx === 1 || sceneIdx === 4) ? setClampWrapping(textureLoader.load(`/assets/medias/3d/level-1/scene-${sceneIdx}/high/car-mesh-texture-alpha.${this.isWebp ? 'webp' : 'jpg'}`)) : alphaAtlas;
 
-        const exportedCam = loadedScene.getObjectByName('camera') as THREE.PerspectiveCamera;
-        if (exportedCam && exportedCam.matrix) {
-          camera.matrixAutoUpdate = false;
-          camera.matrix.copy(exportedCam.matrix);
-          camera.matrixWorld.copy(exportedCam.matrix);
-          camera.matrixWorldNeedsUpdate = false;
+        // Check for _target object in scene mesh to verify target
+        const targetObj = loadedScene.getObjectByName('_target');
+        if (targetObj && targetObj.matrix) {
+          const targetPos = new THREE.Vector3();
+          targetObj.matrix.decompose(targetPos, new THREE.Quaternion(), new THREE.Vector3());
+          (camera as any).target = targetPos;
         }
+        camera.lookAt((camera as any).target);
+        camera.updateProjectionMatrix();
+        camera.matrixAutoUpdate = true;
 
         loadedScene.traverse((child: any) => {
           if (child.name && (child.name.startsWith('_') || child.name === 'camera')) {
@@ -338,36 +565,50 @@ export class WebGLBackgroundEngine {
                 uTextureDefault: { value: defTex },
                 uTextureAlpha: { value: alpTex }
               },
-              side: THREE.DoubleSide,
+              side: THREE.FrontSide,
               transparent: true,
               depthTest: true,
-              depthWrite: true
+              depthWrite: false
             });
           }
         });
 
-        const currentAspect = (typeof window !== 'undefined' ? window.innerWidth : 1920) / (typeof window !== 'undefined' ? window.innerHeight : 1080);
-        const targetAspect = 16 / 9;
-        const scaleFactor = currentAspect > targetAspect ? (currentAspect / targetAspect) * 1.15 : 1.15;
-        loadedScene.scale.set(scaleFactor, scaleFactor, scaleFactor);
         scene.add(loadedScene);
-      } catch (err) {
-        console.error(`[CITRIX ERROR] Failed to load main-mesh.json for scene ${sceneIdx}:`, err);
+
+        // Sync active scene if this scene is currently set as active
+        if (this.scenes.active && this.scenes.active.index === sceneIdx) {
+          this.scenes.active.scene = scene;
+          this.scenes.active.camera = camera;
+          (this.scenes.active as any).baseCamPos = sceneItem.baseCamPos;
+        }
       }
     });
 
     // Populate Level 1 (3D Binary Mesh Inspection & Act Background Scenes)
     for (let idx = 0; idx <= 5; idx++) {
       const scene = new THREE.Scene();
-      const camera = new THREE.PerspectiveCamera(40, 1920 / 889, 0.1, 1000);
-      camera.position.set(0, 0, -5);
-      camera.lookAt(0, 0, 0);
+      const initialAspect = this.sizes.width / (this.sizes.height || 1);
+      const camera = new THREE.PerspectiveCamera(40, initialAspect, 0.1, 1000);
+      const origPos = new THREE.Vector3(0, 0, -5);
+      const targetPos = new THREE.Vector3(0, 0, 0);
+      camera.position.copy(origPos);
+      (camera as any).originalPosition = origPos.clone();
+      (camera as any).target = targetPos.clone();
+      (camera as any).parallaxMoverX = new THREE.Vector3(0.5, 0, 0);
+      (camera as any).parallaxMoverY = new THREE.Vector3(0, 0.5, 0);
+      (camera as any).parallaxMover = new THREE.Vector3(0, 0, 0);
+      (camera as any).transitionMover = new THREE.Vector3(0, 0, 0);
+      (camera as any).navMover = new THREE.Vector3(0, 0, 0);
+      (camera as any).permanentMover = new THREE.Vector3(0, 0, 0);
+      camera.lookAt(targetPos);
 
       const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
       scene.add(ambientLight);
       const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
       dirLight.position.set(5, 5, -5);
       scene.add(dirLight);
+
+      let currentSubScene: any = null;
 
       if (idx === 1) {
         const sub1 = new SubActScene1({
@@ -376,13 +617,14 @@ export class WebGLBackgroundEngine {
           parallax: this.parallax,
           renderer: this.renderer!,
           loader: null,
-          resources: { car: { model: {} } },
+          resources: this.resources,
           cursor: this.cursor,
           clearColor: this.clearColor,
           index: 1
         });
         sub1.start();
         scene.add(sub1.container);
+        currentSubScene = sub1;
       } else if (idx === 2) {
         const sub2 = new SubActScene2({
           time: this.time,
@@ -390,19 +632,59 @@ export class WebGLBackgroundEngine {
           parallax: this.parallax,
           renderer: this.renderer!,
           loader: null,
-          resources: { differential: { model: {} } },
+          resources: this.resources,
           cursor: this.cursor,
           clearColor: this.clearColor,
           index: 2
         });
         sub2.start();
         scene.add(sub2.container);
+        currentSubScene = sub2;
       } else if (idx === 3) {
-        const earthTex = textureLoader.load('/assets/medias/3d/level-2/globe/earth.jpg');
-        const earthNormal = textureLoader.load('/assets/medias/3d/level-2/globe/earth-normal.jpg');
-        const globeMat = new THREE.MeshStandardMaterial({ map: earthTex, normalMap: earthNormal, roughness: 0.6 });
-        const globeMesh = new THREE.Mesh(new THREE.SphereGeometry(1.8, 64, 64), globeMat);
-        scene.add(globeMesh);
+        const sub3 = new SubActScene3({
+          time: this.time,
+          sizes: this.sizes,
+          parallax: this.parallax,
+          renderer: this.renderer!,
+          loader: null,
+          resources: this.resources,
+          cursor: this.cursor,
+          clearColor: this.clearColor,
+          index: 3
+        });
+        sub3.start();
+        scene.add(sub3.container);
+        currentSubScene = sub3;
+      } else if (idx === 4) {
+        const sub4 = new SubActScene4({
+          time: this.time,
+          sizes: this.sizes,
+          parallax: this.parallax,
+          renderer: this.renderer!,
+          loader: null,
+          resources: this.resources,
+          cursor: this.cursor,
+          clearColor: this.clearColor,
+          index: 4
+        });
+        sub4.start();
+        scene.add(sub4.container);
+        currentSubScene = sub4;
+      } else if (idx === 5) {
+        const sub5 = new SubActScene5({
+          time: this.time,
+          sizes: this.sizes,
+          parallax: this.parallax,
+          renderer: this.renderer!,
+          loader: null,
+          resources: this.resources,
+          cursor: this.cursor,
+          clearColor: this.clearColor,
+          index: 5
+        });
+        sub5.start();
+        scene.add(sub5.container);
+        currentSubScene = sub5;
       } else {
         const bgTex = textureLoader.load('/assets/medias/3d/level-2/scene-1/graph-label-high.png');
         const bgMat = new THREE.MeshBasicMaterial({ map: bgTex, transparent: true, opacity: 0.8, side: THREE.DoubleSide });
@@ -411,18 +693,85 @@ export class WebGLBackgroundEngine {
         scene.add(backdropPlane);
       }
 
+      const level1Target = new THREE.WebGLRenderTarget(this.sizes.width, this.sizes.height, {
+        minFilter: THREE.LinearFilter,
+        magFilter: THREE.LinearFilter,
+        format: THREE.RGBAFormat
+      });
+
       const level1Item: any = {
         scene,
         camera,
         index: idx,
-        enter: (direction: string = 'down', speed: number = 1, delay: number = 0) => {
-          const startY = direction === 'down' ? -1 : 1;
-          scene.position.y = startY;
-          gsap.to(scene.position, { duration: speed, delay: delay, y: 0, ease: 'power2.out' });
+        subScene: currentSubScene,
+        renderTarget: level1Target,
+        sizes: this.sizes,
+        needsResize: true,
+        cameraOptions: {
+          transitionStrengthX: 1.5,
+          transitionStrengthY: 1.0
         },
-        leave: (direction: string = 'down', speed: number = 1, delay: number = 0) => {
-          const targetY = direction === 'down' ? -1 : 1;
-          gsap.to(scene.position, { duration: speed, delay: delay, y: targetY, ease: 'power2.in' });
+        enter: (direction: string = 'down', speed: number = 1, delay: number = 1, ease: string = 'power4.out') => {
+          (camera as any).navMover.set(0, 0, 0);
+          if (direction === 'left' || direction === 'right') {
+            const sign = direction === 'left' ? 1 : -1;
+            (camera as any).transitionMover.x = 1.5 * sign;
+            (camera as any).transitionMover.y = 0;
+            gsap.to((camera as any).transitionMover, { duration: speed, delay: delay, x: 0, ease: ease });
+          } else if (direction === 'down' || direction === 'up') {
+            const sign = direction === 'down' ? 1 : -1;
+            (camera as any).transitionMover.y = -1.0 * sign;
+            (camera as any).transitionMover.x = 0;
+            gsap.to((camera as any).transitionMover, { duration: speed, delay: delay, y: 0, ease: ease });
+          }
+        },
+        leave: (direction: string = 'down', speed: number = 1, delay: number = 0, ease: string = 'power4.in') => {
+          if (direction === 'left' || direction === 'right') {
+            const sign = direction === 'left' ? 1 : -1;
+            gsap.to((camera as any).transitionMover, { duration: speed, delay: delay, x: -1.5 * sign, ease: ease });
+          } else if (direction === 'down' || direction === 'up') {
+            const sign = direction === 'down' ? 1 : -1;
+            gsap.to((camera as any).transitionMover, { duration: speed, delay: delay, y: -1.0 * sign, ease: ease });
+          }
+        },
+        render: () => {
+          if (this.renderer) {
+            this.renderer.setRenderTarget(level1Target);
+            this.renderer.render(scene, camera);
+            this.renderer.setRenderTarget(null);
+          }
+        },
+        update: () => {
+          if (level1Item.needsResize) {
+            camera.aspect = this.sizes.width / (this.sizes.height || 1);
+            camera.updateProjectionMatrix();
+            level1Target.setSize(this.sizes.width, this.sizes.height);
+            level1Item.needsResize = false;
+          }
+
+          if ((camera as any).permanentMover) {
+            (camera as any).permanentMover.x = 0.05 * Math.sin(0.0005 * this.time.elapsed);
+            (camera as any).permanentMover.y = 0.05 * Math.sin(0.00042 * this.time.elapsed);
+          }
+
+          if ((camera as any).parallaxMoverX && (camera as any).parallaxMoverY && (camera as any).parallaxMover) {
+            const targetX = (camera as any).parallaxMoverX.clone().multiplyScalar(-this.parallax.x);
+            const targetY = (camera as any).parallaxMoverY.clone().multiplyScalar(-this.parallax.y);
+
+            (camera as any).parallaxMover.x += 0.005 * (targetX.x + targetY.x - (camera as any).parallaxMover.x) * this.time.delta;
+            (camera as any).parallaxMover.y += 0.005 * (targetX.y + targetY.y - (camera as any).parallaxMover.y) * this.time.delta;
+
+            const posX = (camera as any).originalPosition.x + (camera as any).parallaxMover.x + (camera as any).transitionMover.x + (camera as any).permanentMover.x + (camera as any).navMover.x;
+            const posY = (camera as any).originalPosition.y + (camera as any).parallaxMover.y + (camera as any).transitionMover.y + (camera as any).permanentMover.y + (camera as any).navMover.y;
+            const posZ = (camera as any).originalPosition.z + (camera as any).parallaxMover.z + (camera as any).transitionMover.z + (camera as any).navMover.z;
+
+            camera.position.set(posX, posY, posZ);
+            camera.lookAt((camera as any).target);
+          }
+
+          if (typeof level1Item.render === 'function') {
+            level1Item.render();
+          }
         }
       };
 
@@ -462,13 +811,11 @@ export class WebGLBackgroundEngine {
     if (typeof window === 'undefined') return;
 
     this.resources = {};
-    const tdsLoader = new TDSLoader();
-
-    // 1. Load Level-2 F1 Red Bull Car .3ds Model
+    // 1. Load Level-2 F1 Red Bull Car Model (AssetLoaderManager)
     this.loader.add();
     this.resources.car = null;
 
-    tdsLoader.load('/assets/medias/3d/level-2/car/f1-redbull-light.3ds', (object3d: THREE.Group) => {
+    const parseCarScene = (object3d: THREE.Object3D) => {
       const parsedData: Record<string, any> = {};
       const categories = [
         { name: 'bounding', category: 'bounding' },
@@ -485,22 +832,32 @@ export class WebGLBackgroundEngine {
         if (found && (child as THREE.Mesh).geometry) {
           let categoryObj = parsedData[found.category];
           if (!categoryObj) categoryObj = parsedData[found.category] = {};
-          (child as THREE.Mesh).geometry.rotateX(-0.5 * Math.PI);
           categoryObj[found.name] = child;
         }
       });
+      return parsedData;
+    };
 
-      this.resources.car = parsedData;
+    this.assetLoader.loadModel3D(
+      '/assets/medias/3d/level-2/car/f1-redbull.glb',
+      '/assets/medias/3d/level-2/car/f1-redbull-light.3ds',
+      (object3d) => {
+        object3d.children.forEach((child: THREE.Object3D) => {
+          if ((child as THREE.Mesh).geometry) {
+            (child as THREE.Mesh).geometry.rotateX(-0.5 * Math.PI);
+          }
+        });
+      }
+    ).then((object3d) => {
+      this.resources.car = parseCarScene(object3d);
       this.loader.load();
-    }, undefined, () => {
-      this.loader.load();
-    });
+    }).catch(() => this.loader.load());
 
-    // 2. Load Level-2 Differential Gear .3ds Model
+    // 2. Load Level-2 Differential Gear Model (AssetLoaderManager)
     this.loader.add();
     this.resources.differential = null;
 
-    tdsLoader.load('/assets/medias/3d/level-2/differential/differential.3ds', (object3d: THREE.Group) => {
+    const parseDiffScene = (object3d: THREE.Object3D) => {
       const parsedData: Record<string, any> = {};
       const categories = [
         { name: 'intern', category: 'model' },
@@ -512,18 +869,28 @@ export class WebGLBackgroundEngine {
         if (found && (child as THREE.Mesh).geometry) {
           let categoryObj = parsedData[found.category];
           if (!categoryObj) categoryObj = parsedData[found.category] = {};
-          (child as THREE.Mesh).geometry.rotateZ(-0.5 * Math.PI);
-          (child as THREE.Mesh).geometry.rotateX(-0.5 * Math.PI);
-          (child as THREE.Mesh).geometry.rotateY(Math.PI);
           categoryObj[found.name] = child;
         }
       });
+      return parsedData;
+    };
 
-      this.resources.differential = parsedData;
+    this.assetLoader.loadModel3D(
+      '/assets/medias/3d/level-2/differential/differential.glb',
+      '/assets/medias/3d/level-2/differential/differential.3ds',
+      (object3d) => {
+        object3d.children.forEach((child: THREE.Object3D) => {
+          if ((child as THREE.Mesh).geometry) {
+            (child as THREE.Mesh).geometry.rotateZ(-0.5 * Math.PI);
+            (child as THREE.Mesh).geometry.rotateX(-0.5 * Math.PI);
+            (child as THREE.Mesh).geometry.rotateY(Math.PI);
+          }
+        });
+      }
+    ).then((object3d) => {
+      this.resources.differential = parseDiffScene(object3d);
       this.loader.load();
-    }, undefined, () => {
-      this.loader.load();
-    });
+    }).catch(() => this.loader.load());
   }
 
   public loaded(): void {
@@ -547,13 +914,13 @@ export class WebGLBackgroundEngine {
   public setCursor(x: number, y: number): void {
     this.cursor.x = x;
     this.cursor.y = y;
-    this.cursor.normalX = (x / this.sizes.width) * 2 - 1;
-    this.cursor.normalY = -(y / this.sizes.height) * 2 + 1;
+    this.cursor.targetX = (x / (this.sizes.width || 1)) - 0.5;
+    this.cursor.targetY = (y / (this.sizes.height || 1)) - 0.5;
   }
 
   public setParallax(): void {
-    this.parallax.x = 0;
-    this.parallax.y = 0;
+    this.cursor.targetX = (this.cursor.x / (this.sizes.width || 1)) - 0.5;
+    this.cursor.targetY = (this.cursor.y / (this.sizes.height || 1)) - 0.5;
   }
 
   public setRenderer(canvas?: HTMLCanvasElement): void {
@@ -632,8 +999,16 @@ export class WebGLBackgroundEngine {
 
   public goFuzzy(): void {
     this.isFuzzyTransitionning = true;
-    if (this.scenes.active.navMover) {
-      gsap.to(this.scenes.active.camera.position, { duration: 0.6, x: -0.5, ease: 'power2.inOut' });
+    if (this.scenes.active && (this.scenes.active as any).renderTarget) {
+      this.stretchShaderPass.uniforms.uTextureA.value = (this.scenes.active as any).renderTarget.texture;
+      this.stretchShaderPass.uniforms.uTextureB.value = (this.scenes.active as any).renderTarget.texture;
+    }
+    if (this.scenes.active && this.scenes.active.camera && (this.scenes.active.camera as any).navMover) {
+      gsap.to((this.scenes.active.camera as any).navMover, {
+        duration: 0.6,
+        x: -0.5,
+        ease: 'power2.inOut'
+      });
     }
     gsap.to(this.stretchShaderPass.uniforms.uStretchNoiseMultiplier.value, { duration: 0.5, x: 2 });
     gsap.to(this.stretchShaderPass.uniforms.uStretchStrength, {
@@ -645,8 +1020,12 @@ export class WebGLBackgroundEngine {
 
   public leaveFuzzy(): void {
     this.isFuzzyTransitionning = true;
-    if (this.scenes.active.navMover) {
-      gsap.to(this.scenes.active.camera.position, { duration: 0.75, x: 0, ease: 'power2.inOut' });
+    if (this.scenes.active && this.scenes.active.camera && (this.scenes.active.camera as any).navMover) {
+      gsap.to((this.scenes.active.camera as any).navMover, {
+        duration: 0.75,
+        x: 0,
+        ease: 'power2.inOut'
+      });
     }
     gsap.to(this.stretchShaderPass.uniforms.uStretchNoiseMultiplier.value, { duration: 0.5, x: 0.01 });
     gsap.to(this.stretchShaderPass.uniforms.uStretchStrength, {
@@ -658,18 +1037,26 @@ export class WebGLBackgroundEngine {
 
   public goTo(levelIndex: number, levelType: number | null = null, speed: number = 2): void {
     if (levelIndex === this.scenes.active.index && levelType === null) return;
+    
+    let direction: 'left' | 'right' | 'down' | 'up' = 'left';
     if (levelType !== null && levelType !== this.scenes.currentLevel) {
+      direction = levelType > this.scenes.currentLevel ? 'down' : 'up';
       this.scenes.currentLevel = levelType;
+    } else {
+      direction = this.scenes.active && this.scenes.active.index < levelIndex ? 'left' : 'right';
     }
 
+    const nextSceneItem = this.scenes.levels[this.scenes.currentLevel] ? this.scenes.levels[this.scenes.currentLevel][levelIndex] : null;
+    if (!nextSceneItem) return;
+
     if (speed === 0) {
-      if (this.scenes.levels[this.scenes.currentLevel][levelIndex]) {
-        this.scenes.active = {
-          ...this.scenes.levels[this.scenes.currentLevel][levelIndex],
-          navMover: new THREE.Vector3(0, 0, 0)
-        };
-      }
+      this.scenes.active = nextSceneItem;
       this.scenes.leaving = null;
+      if (nextSceneItem.renderTarget) {
+        this.stretchShaderPass.uniforms.uTextureA.value = nextSceneItem.renderTarget.texture;
+        this.stretchShaderPass.uniforms.uTextureB.value = nextSceneItem.renderTarget.texture;
+      }
+      if (typeof nextSceneItem.enter === 'function') nextSceneItem.enter(direction, 0, 0);
       return;
     }
 
@@ -678,18 +1065,29 @@ export class WebGLBackgroundEngine {
       return;
     }
 
-    if (this.state === 'ready') {
-      this.scenes.leaving = this.scenes.active;
-      if (this.scenes.levels[this.scenes.currentLevel][levelIndex]) {
-        this.scenes.active = {
-          ...this.scenes.levels[this.scenes.currentLevel][levelIndex],
-          navMover: new THREE.Vector3(0, 0, 0)
-        };
+    if (this.state === 'leaving') {
+      this.scenes.active = nextSceneItem;
+      if (this.scenes.leaving && this.scenes.leaving.renderTarget && nextSceneItem.renderTarget) {
+        this.stretchShaderPass.uniforms.uTextureA.value = this.scenes.leaving.renderTarget.texture;
+        this.stretchShaderPass.uniforms.uTextureB.value = nextSceneItem.renderTarget.texture;
       }
+      if (typeof nextSceneItem.enter === 'function') nextSceneItem.enter(direction);
+    } else if (this.state === 'ready') {
+      this.scenes.leaving = this.scenes.active;
+      this.scenes.active = nextSceneItem;
+
+      if (this.scenes.leaving.renderTarget && this.scenes.active.renderTarget) {
+        this.stretchShaderPass.uniforms.uTextureA.value = this.scenes.leaving.renderTarget.texture;
+        this.stretchShaderPass.uniforms.uTextureB.value = this.scenes.active.renderTarget.texture;
+      }
+      this.stretchShaderPass.uniforms.uTransitionDirection.value = (direction === 'left' || direction === 'down') ? 1 : -1;
+      this.stretchShaderPass.uniforms.uTransitionStrength.value = 0;
       this.state = 'leaving';
 
       if (this.arrivingCallback) window.clearTimeout(this.arrivingCallback);
       if (this.endCallback) window.clearTimeout(this.endCallback);
+
+      const halfSpeed = 0.5 * speed;
 
       this.arrivingCallback = window.setTimeout(() => {
         this.state = 'arriving';
@@ -699,6 +1097,10 @@ export class WebGLBackgroundEngine {
       this.endCallback = window.setTimeout(() => {
         this.scenes.leaving = null;
         this.state = 'ready';
+        if (this.scenes.active && (this.scenes.active as any).renderTarget) {
+          this.stretchShaderPass.uniforms.uTextureA.value = (this.scenes.active as any).renderTarget.texture;
+          this.stretchShaderPass.uniforms.uTextureB.value = (this.scenes.active as any).renderTarget.texture;
+        }
         this.endCallback = null;
         if (this.pending !== null) {
           this.goTo(this.pending);
@@ -709,31 +1111,49 @@ export class WebGLBackgroundEngine {
       gsap.killTweensOf(this.stretchShaderPass.uniforms.uStretchStrength);
       gsap.killTweensOf(this.stretchShaderPass.uniforms.uTransitionStrength);
 
-      if (this.postMaterial) {
-        gsap.killTweensOf(this.postMaterial.uniforms.uTransitionStrength);
-        gsap.killTweensOf(this.postMaterial.uniforms.uStretchStrength);
-
-        this.postMaterial.uniforms.uTransitionStrength.value = 0;
-        gsap.to(this.postMaterial.uniforms.uTransitionStrength, {
-          duration: 1.2 * speed,
-          value: 1,
-          ease: 'power2.inOut',
-          onComplete: () => {
-            if (this.postMaterial) this.postMaterial.uniforms.uTransitionStrength.value = 0;
-            this.scenes.leaving = null;
-            this.state = 'ready';
-          }
-        });
-
-        gsap.to(this.postMaterial.uniforms.uStretchStrength, {
-          duration: 0.6 * speed,
-          value: 0.85,
+      if (direction === 'left' || direction === 'right') {
+        gsap.to(this.stretchShaderPass.uniforms.uStretchStrength, {
+          duration: halfSpeed,
+          value: halfSpeed,
+          delay: 0,
           ease: 'power2.in'
         });
-        gsap.to(this.postMaterial.uniforms.uStretchStrength, {
-          duration: 0.6 * speed,
+        gsap.to(this.stretchShaderPass.uniforms.uStretchStrength, {
+          duration: halfSpeed,
           value: 0,
-          delay: 0.6 * speed,
+          delay: halfSpeed,
+          ease: 'power2.out'
+        });
+
+        gsap.to(this.stretchShaderPass.uniforms.uTransitionStrength, {
+          duration: speed,
+          value: halfSpeed,
+          delay: 0,
+          ease: 'power2.inOut'
+        });
+      } else {
+        this.stretchShaderPass.uniforms.uStretchStrength.value = 0;
+        this.stretchShaderPass.uniforms.uTransitionStrength.value = 0;
+      }
+
+      if (typeof this.scenes.active.enter === 'function') {
+        this.scenes.active.enter(direction, halfSpeed, halfSpeed, 'power4.out');
+      }
+      if (typeof this.scenes.leaving.leave === 'function') {
+        this.scenes.leaving.leave(direction, halfSpeed, 0, 'power4.in');
+      }
+    }
+  }
+
+  public goToStep(stepIndex: number): void {
+    if (this.scenes.active) {
+      if (typeof (this.scenes.active as any).goToStep === 'function') {
+        (this.scenes.active as any).goToStep(stepIndex);
+      } else if (this.scenes.active.camera && (this.scenes.active.camera as any).navMover) {
+        const offset = (stepIndex - 1) * 0.8;
+        gsap.to((this.scenes.active.camera as any).navMover, {
+          duration: 1.0,
+          x: offset,
           ease: 'power2.out'
         });
       }
@@ -744,35 +1164,24 @@ export class WebGLBackgroundEngine {
     if (typeof window === 'undefined') return;
     this.sizes.width = window.innerWidth;
     this.sizes.height = window.innerHeight;
-    const aspect = window.innerWidth / window.innerHeight;
+
+    if (this.cursor && typeof (this.cursor as any).resize === 'function') {
+      (this.cursor as any).resize(this.sizes.width, this.sizes.height);
+    }
 
     if (this.scenes && this.scenes.levels) {
       this.scenes.levels.forEach((level) => {
         level.forEach(item => {
-          if (item.camera) {
-            item.camera.aspect = aspect;
-            const baseFov = (this.sceneConfigs[item.index] && this.sceneConfigs[item.index].fov) ? this.sceneConfigs[item.index].fov : 35;
-            if (aspect > (16 / 9)) {
-              item.camera.fov = baseFov * (aspect / (16 / 9));
-            } else {
-              item.camera.fov = baseFov;
-            }
-            item.camera.updateProjectionMatrix();
+          (item as any).sizes = this.sizes;
+          (item as any).needsResize = true;
+          if (typeof (item as any).resize === 'function') {
+            (item as any).resize();
           }
         });
       });
     }
 
-    if (this.scenes.active && this.scenes.active.camera) {
-      this.scenes.active.camera.aspect = aspect;
-      const baseFov = (this.sceneConfigs[this.scenes.active.index] && this.sceneConfigs[this.scenes.active.index].fov) ? this.sceneConfigs[this.scenes.active.index].fov : 35;
-      if (aspect > (16 / 9)) {
-        this.scenes.active.camera.fov = baseFov * (aspect / (16 / 9));
-      } else {
-        this.scenes.active.camera.fov = baseFov;
-      }
-      this.scenes.active.camera.updateProjectionMatrix();
-    }
+    this.stretchShaderPass.uniforms.uInterpolationCount.value = 3 + Math.round(this.sizes.width / 300);
 
     if (this.renderer) {
       this.renderer.setSize(window.innerWidth, window.innerHeight);
@@ -794,17 +1203,16 @@ export class WebGLBackgroundEngine {
 
     if (this.time.delta > 60) this.time.delta = 60;
 
-    this.stretchShaderPass.uniforms.uTime.value = this.time.elapsed;
+    // Smooth lerp cursor target to parallax position once per animation frame (eliminates high-frequency mouse jitter)
+    const lerpFactor = 0.05;
+    this.parallax.x += (this.cursor.targetX - this.parallax.x) * lerpFactor;
+    this.parallax.y += (this.cursor.targetY - this.parallax.y) * lerpFactor;
+    this.cursor.normalX = this.parallax.x;
+    this.cursor.normalY = this.parallax.y;
 
-    // 3D Mouse Parallax Effect (smooth lerp following cursor pointer)
-    const targetParallaxX = this.cursor.normalX * 0.4;
-    const targetParallaxY = this.cursor.normalY * 0.3;
-    this.parallax.x += (targetParallaxX - this.parallax.x) * 0.08;
-    this.parallax.y += (targetParallaxY - this.parallax.y) * 0.08;
-
-    if (this.scenes.active && this.scenes.active.scene) {
-      this.scenes.active.scene.position.x = this.parallax.x;
-      this.scenes.active.scene.position.y = this.parallax.y;
+    if (this.scenes.active && (this.scenes.active as any).parallax) {
+      (this.scenes.active as any).parallax.x = this.parallax.x;
+      (this.scenes.active as any).parallax.y = this.parallax.y;
     }
 
     if (this.scenes.active && typeof this.scenes.active.update === 'function') {
@@ -815,23 +1223,26 @@ export class WebGLBackgroundEngine {
     }
 
     if (this.renderer && this.scenes.active && this.scenes.active.scene && this.scenes.active.camera) {
-      if (this.scenes.active.camera.matrixAutoUpdate) {
-        this.scenes.active.camera.lookAt(0, 0, 0);
-      }
+      if (this.state !== 'ready' || Math.abs(this.stretchShaderPass.uniforms.uStretchStrength.value) > 0.001) {
+        if (this.postMaterial && this.postScene && this.postCamera) {
+          this.postMaterial.uniforms.uTime.value = this.time.elapsed;
+          this.postMaterial.uniforms.uStretchStrength.value = this.stretchShaderPass.uniforms.uStretchStrength.value;
+          this.postMaterial.uniforms.uTransitionStrength.value = this.stretchShaderPass.uniforms.uTransitionStrength.value;
+          this.postMaterial.uniforms.uTransitionDirection.value = this.stretchShaderPass.uniforms.uTransitionDirection.value;
+          this.postMaterial.uniforms.uInterpolationCount.value = this.stretchShaderPass.uniforms.uInterpolationCount.value;
 
-      if (this.scenes.leaving && this.scenes.leaving.scene && this.scenes.leaving.camera && this.renderTargetA && this.renderTargetB && this.postScene && this.postCamera && this.postMaterial && this.postMaterial.uniforms.uTransitionStrength.value > 0.001) {
-        this.renderer.setRenderTarget(this.renderTargetA);
-        this.renderer.render(this.scenes.leaving.scene, this.scenes.leaving.camera);
+          if (this.scenes.leaving && (this.scenes.leaving as any).renderTarget) {
+            this.postMaterial.uniforms.uTextureA.value = (this.scenes.leaving as any).renderTarget.texture;
+          } else if (this.scenes.active && (this.scenes.active as any).renderTarget) {
+            this.postMaterial.uniforms.uTextureA.value = (this.scenes.active as any).renderTarget.texture;
+          }
+          if (this.scenes.active && (this.scenes.active as any).renderTarget) {
+            this.postMaterial.uniforms.uTextureB.value = (this.scenes.active as any).renderTarget.texture;
+          }
 
-        this.renderer.setRenderTarget(this.renderTargetB);
-        this.renderer.render(this.scenes.active.scene, this.scenes.active.camera);
-
-        this.postMaterial.uniforms.uTime.value = this.time.elapsed;
-        this.postMaterial.uniforms.uTextureA.value = this.renderTargetA.texture;
-        this.postMaterial.uniforms.uTextureB.value = this.renderTargetB.texture;
-
-        this.renderer.setRenderTarget(null);
-        this.renderer.render(this.postScene, this.postCamera);
+          this.renderer.setRenderTarget(null);
+          this.renderer.render(this.postScene, this.postCamera);
+        }
       } else {
         this.renderer.setRenderTarget(null);
         this.renderer.render(this.scenes.active.scene, this.scenes.active.camera);

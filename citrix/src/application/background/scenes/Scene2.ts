@@ -49,6 +49,9 @@ export class SubActScene2 extends SubActScene {
   }
 
   public setDifferential(): void {
+    if (this.differential && this.differential.container) {
+      this.container.remove(this.differential.container);
+    }
     this.differential = {};
     this.differential.container = new THREE.Object3D();
     this.differential.container.scale.set(0.07, 0.07, 0.07);

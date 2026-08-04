@@ -21,7 +21,7 @@
         <span class="t-text--xs t-text--ls-xxs t-text--black u-inline-block u-uppercase u-valign-middle">Sound</span>
       </button>
 
-      <button class="c-header__btn-menu t-btn u-relative u-inline-block u-valign-middle u-vacuum" @click="onToggleNav" @mouseenter="onBtnNavOver">
+      <button class="c-header__btn-menu t-btn u-relative u-inline-block u-valign-middle u-vacuum" :class="{ 'is-active': isNavActive }" @click="onToggleNav" @mouseenter="onBtnNavOver">
         <div class="c-header__btn-menu__dot u-inline-block u-bg--white"></div>
         <div class="c-header__btn-menu__dot u-inline-block u-bg--white"></div>
         <div class="c-header__btn-menu__dot u-inline-block u-bg--white"></div>
@@ -51,7 +51,8 @@ export default {
   name: 'app-header',
   props: {
     slideIndex: { type: Number, default: 0 },
-    isMuted: { type: Boolean, default: false }
+    isMuted: { type: Boolean, default: false },
+    isNavActive: { type: Boolean, default: false }
   },
   data: function() {
     return {
@@ -64,11 +65,13 @@ export default {
   },
   methods: {
     onToggleNav: function() {
+      this.$emit('toggle:nav');
       if (this.eventHub) {
         this.eventHub.$emit('toggle:nav');
       }
     },
     onToggleSound: function() {
+      this.$emit('toggle:sound');
       if (this.eventHub) {
         this.eventHub.$emit('toggle:sound');
       }

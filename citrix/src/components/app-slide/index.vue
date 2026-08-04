@@ -4,7 +4,7 @@
  * Status: [EMPIRICALLY VERIFIED AUDIT - 100% EMPIRICAL LIVE DOM RENDER & METHODS VIA MCP CHROME]
 -->
 <template>
-  <div class="c-slide u-absolute u-pos-tl u-fit" :class="{ 'is-bottom-active': isBottomSlideActive }" @mouseup="onTouchEnd" @touchend="onTouchEnd" @touchstart="onTouchDown" @touchmove="onTouchMove">
+  <div class="c-slide u-absolute u-pos-tl u-fit" :class="{ 'is-bottom-slide-active': isBottomSlideActive, 'is-bottom-active': isBottomSlideActive }" @mouseup="onTouchEnd" @touchend="onTouchEnd" @touchstart="onTouchDown" @touchmove="onTouchMove">
     <div class="c-slide-bottom__panel o-wrapper--panel u-fit u-bg--black"></div>
 
     <!-- Home Slide (Index 0) -->
@@ -152,7 +152,8 @@ export default {
       isSlideActive: false,
       btnOffsetX: 0,
       isBtnPlayOver: false,
-      eventHub: null
+      eventHub: null,
+      _isMounted: false
     };
   },
   created: function() {
@@ -167,6 +168,7 @@ export default {
     }
   },
   mounted: function() {
+    this._isMounted = true;
     this.onActiveIndexChange();
   },
   methods: {
@@ -206,7 +208,7 @@ export default {
         clearTimeout(this._leavingTimer);
         this.$el.classList.remove('is-active');
         this.isSlideActive = false;
-        if (this.$root && !this.$root.isFirstLoading) {
+        if (this._isMounted && this.$root && !this.$root.isFirstLoading) {
           this.$el.classList.add('is-leaving');
         }
         this._leavingTimer = setTimeout(function() {

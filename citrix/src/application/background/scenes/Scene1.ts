@@ -64,6 +64,9 @@ export class SubActScene1 extends SubActScene {
   }
 
   public setCar(): void {
+    if (this.car && this.car.mover1) {
+      this.container.remove(this.car.mover1);
+    }
     this.car = {};
     this.car.mover1 = new THREE.Object3D();
     this.container.add(this.car.mover1);
