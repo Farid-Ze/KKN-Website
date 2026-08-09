@@ -85,10 +85,32 @@ export class ModelMeshLoader {
       }
     });
 
+    const safeMerge = (geos: THREE.BufferGeometry[]): THREE.BufferGeometry | null => {
+      if (geos.length === 0) return null;
+      if (geos.length === 1) return geos[0];
+      try {
+        const merged = BufferGeometryUtils.mergeGeometries(geos, false);
+        if (merged) return merged;
+      } catch (_e) {}
+      try {
+        const posOnlyGeos = geos.map((g) => {
+          const bg = new THREE.BufferGeometry();
+          if (g.attributes.position) bg.setAttribute('position', g.attributes.position);
+          if (g.attributes.normal) bg.setAttribute('normal', g.attributes.normal);
+          if (g.attributes.uv) bg.setAttribute('uv', g.attributes.uv);
+          if (g.index) bg.setIndex(g.index);
+          return bg;
+        });
+        return BufferGeometryUtils.mergeGeometries(posOnlyGeos, false) || geos[0];
+      } catch (_e2) {
+        return geos[0];
+      }
+    };
+
     for (const catName in categories) {
       const geos = categories[catName];
       if (geos.length > 0) {
-        const merged = BufferGeometryUtils.mergeGeometries(geos, false);
+        const merged = safeMerge(geos);
         map[catName] = {
           name: catName,
           geometry: merged || geos[0]
@@ -124,8 +146,30 @@ export class ModelMeshLoader {
       }
     });
 
-    const mergedIntern = internGeos.length > 0 ? BufferGeometryUtils.mergeGeometries(internGeos, false) : null;
-    const mergedExtern = externGeos.length > 0 ? BufferGeometryUtils.mergeGeometries(externGeos, false) : null;
+    const safeMerge = (geos: THREE.BufferGeometry[]): THREE.BufferGeometry | null => {
+      if (geos.length === 0) return null;
+      if (geos.length === 1) return geos[0];
+      try {
+        const merged = BufferGeometryUtils.mergeGeometries(geos, false);
+        if (merged) return merged;
+      } catch (_e) {}
+      try {
+        const posOnlyGeos = geos.map((g) => {
+          const bg = new THREE.BufferGeometry();
+          if (g.attributes.position) bg.setAttribute('position', g.attributes.position);
+          if (g.attributes.normal) bg.setAttribute('normal', g.attributes.normal);
+          if (g.attributes.uv) bg.setAttribute('uv', g.attributes.uv);
+          if (g.index) bg.setIndex(g.index);
+          return bg;
+        });
+        return BufferGeometryUtils.mergeGeometries(posOnlyGeos, false) || geos[0];
+      } catch (_e2) {
+        return geos[0];
+      }
+    };
+
+    const mergedIntern = safeMerge(internGeos);
+    const mergedExtern = safeMerge(externGeos);
 
     map['intern'] = {
       name: 'intern',
