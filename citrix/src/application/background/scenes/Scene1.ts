@@ -72,7 +72,7 @@ export class SubActScene1 extends SubActScene {
     this.container.add(this.car.mover1);
 
     this.car.container = new THREE.Object3D();
-    this.car.container.scale.set(0.12, 0.12, 0.12);
+    this.car.container.scale.set(0.14, 0.14, 0.14);
     this.car.container.rotation.set(-0.02, Math.PI, 0);
     this.car.container.position.set(0, -0.3, 0);
     this.car.mover1.add(this.car.container);
@@ -81,7 +81,7 @@ export class SubActScene1 extends SubActScene {
       color: new THREE.Color(0x38bdf8),
       wireframe: true,
       transparent: true,
-      opacity: 0.85
+      opacity: 0.9
     });
     this.car.plainMaterial = new THREE.MeshBasicMaterial({ color: 0x0b101e });
 

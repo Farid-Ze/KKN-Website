@@ -53,7 +53,7 @@ export class SubActScene3 extends SubActScene {
       depthWrite: false
     });
     this.background.mesh = new THREE.Mesh(this.background.geometry, this.background.material);
-    this.background.mesh.position.set(3.7, 0, 3.5);
+    this.background.mesh.position.set(0, -0.2, 1.5);
     this.background.mesh.rotation.x = Math.PI;
     this.container.add(this.background.mesh);
   }

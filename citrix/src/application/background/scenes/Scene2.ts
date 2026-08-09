@@ -54,7 +54,7 @@ export class SubActScene2 extends SubActScene {
     }
     this.differential = {};
     this.differential.container = new THREE.Object3D();
-    this.differential.container.scale.set(0.07, 0.07, 0.07);
+    this.differential.container.scale.set(0.45, 0.45, 0.45);
     this.container.add(this.differential.container);
 
     const textureLoader = new THREE.TextureLoader();
