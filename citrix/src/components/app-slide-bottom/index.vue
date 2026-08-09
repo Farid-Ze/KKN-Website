@@ -139,8 +139,11 @@ export default {
     }
   },
   watch: {
-    isActive: function(val) {
-      this.onActiveChange();
+    isActive: {
+      immediate: true,
+      handler: function(val) {
+        this.onActiveChange();
+      }
     }
   },
   methods: {

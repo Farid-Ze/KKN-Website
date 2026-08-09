@@ -685,12 +685,6 @@ export class WebGLBackgroundEngine {
         sub5.start();
         scene.add(sub5.container);
         currentSubScene = sub5;
-      } else {
-        const bgTex = textureLoader.load('/assets/medias/3d/level-2/scene-1/graph-label-high.png');
-        const bgMat = new THREE.MeshBasicMaterial({ map: bgTex, transparent: true, opacity: 0.8, side: THREE.DoubleSide });
-        const backdropPlane = new THREE.Mesh(new THREE.PlaneGeometry(8, 4.5), bgMat);
-        backdropPlane.position.set(0, 0, 1);
-        scene.add(backdropPlane);
       }
 
       const level1Target = new THREE.WebGLRenderTarget(this.sizes.width, this.sizes.height, {
