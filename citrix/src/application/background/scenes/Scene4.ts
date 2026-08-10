@@ -75,7 +75,7 @@ export class SubActScene4 extends SubActScene {
       rearWing: { keypointIndex: 2 }
     };
     this.car.container = new THREE.Object3D();
-    this.car.container.scale.set(0.035, 0.035, 0.035);
+    this.car.container.scale.set(0.14, 0.14, 0.14);
     this.car.container.position.x = -this.sizes.width / 2 / 2000;
     this.car.container.rotation.set(0, 0.5 * Math.PI, -0.5 * Math.PI);
     this.container.add(this.car.container);

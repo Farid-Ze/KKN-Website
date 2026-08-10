@@ -57,7 +57,7 @@ export class SubActScene5 extends SubActScene {
     this.earth.normalTexture.magFilter = THREE.NearestFilter;
     this.earth.normalTexture.minFilter = THREE.NearestFilter;
 
-    this.earth.geometry = new THREE.SphereGeometry(0.7, 32, 32);
+    this.earth.geometry = new THREE.SphereGeometry(1.1, 32, 32);
     this.earth.material = new THREE.MeshPhongMaterial({
       map: this.earth.diffuseTexture,
       normalMap: this.earth.normalTexture,
