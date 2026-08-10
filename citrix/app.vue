@@ -16,6 +16,7 @@
     <app-slideshow :background="background || undefined" :slide-index="slideIndex" :is-bottom-slide-active="isBottomSlideActive" />
     <app-modal-video v-if="isModalActive" :youtube-id="currentYoutubeId" @close="onToggleModal" />
     <app-sound-manager :is-muted="isMuted" :is-modal-active="isModalActive" :is-nav-active="isNavActive" />
+    <kawan-kkn-chat :is-blocked="isNavActive || isModalActive || isBottomSlideActive" />
   </div>
 </template>
 
@@ -33,6 +34,7 @@ import AppNav from './src/components/app-nav/index.vue';
 import AppSlideshow from './src/components/app-slideshow/index.vue';
 import AppModalVideo from './src/components/app-modal-video/index.vue';
 import AppSoundManager from './src/components/app-sound-manager/index.vue';
+import KawanKknChat from './src/components/kawan-kkn-chat/index.vue';
 
 const canvas = ref<HTMLCanvasElement | null>(null);
 // Use shallowRef and markRaw to prevent Vue 3 Proxy wrapping of Three.js objects (fixes modelViewMatrix Proxy TypeError)
