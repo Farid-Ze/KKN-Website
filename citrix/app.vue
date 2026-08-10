@@ -1,7 +1,7 @@
 <!--
  * [BASELINE 2017 LIVE FACTS]
  * Authentic Citrix File Path: app.vue
- * Status: [EMPIRICALLY VERIFIED AUDIT - 100% EMPIRICAL FIX FOR VUE 3 THREE.JS PROXY MODELVIEWMATRIX ERROR VIA MARKRAW]
+ * Status: [PARTIALLY INSPECTED]
 -->
 <template>
   <div id="app" class="c-application" :class="{ 'is-ready': isReady, 'is-modal-active': isModalActive, 'is-nav-active': isNavActive, 'is-bottom-slide-active': isBottomSlideActive }">
@@ -28,6 +28,7 @@ import globalData from './src/application/global.json';
 import { eventHub } from './src/mixins/eventHub';
 import { MatrixParityVerifier } from './src/utilities/matrix_parity_verifier';
 import { routes } from './src/application/router';
+import { soundManager } from './src/application/sound/index';
 
 import AppHeader from './src/components/app-header/index.vue';
 import AppNav from './src/components/app-nav/index.vue';
@@ -58,7 +59,8 @@ let onResizeHandler: (() => void) | null = null;
 
 const route = useRoute();
 
-const updateSlideFromRoute = (path: string) => {
+const updateSlideFromRoute = (path?: string) => {
+  if (!path) return;
   const matched = routes.find(r => r.path === path);
   if (matched && matched.meta && typeof matched.meta.slideIndex === 'number') {
     const newIdx = matched.meta.slideIndex;
@@ -69,8 +71,10 @@ const updateSlideFromRoute = (path: string) => {
   }
 };
 
-watch(() => route.path, (newPath) => {
-  updateSlideFromRoute(newPath);
+watch(() => route?.path, (newPath) => {
+  if (newPath) {
+    updateSlideFromRoute(newPath);
+  }
 }, { immediate: true });
 
 const onMouseMove = (e: MouseEvent) => {
@@ -100,8 +104,6 @@ const onUserActivation = () => {
   eventHub.$emit('sound:play', 'ambiant-level-1');
   eventHub.$emit('sound:play', 'ambiant-level-2');
 };
-
-import { soundManager } from './src/application/sound/index';
 
 const onToggleNav = () => {
   onUserActivation();
@@ -161,7 +163,7 @@ onMounted(() => {
       background.value = markRaw(engine);
       console.log('[CITRIX DEBUG] Background assigned with markRaw');
 
-      updateSlideFromRoute(route.path);
+      updateSlideFromRoute(route?.path);
 
       const report = MatrixParityVerifier.verifyEngine(engine);
       parityScore.value = report.filter((r: any) => r.passed).length;

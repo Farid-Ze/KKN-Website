@@ -4,6 +4,12 @@ import vitePluginGlsl from 'vite-plugin-glsl';
 export default defineNuxtConfig({
   devtools: { enabled: false },
 
+  pages: false,
+
+  experimental: {
+    appManifest: false
+  },
+
   runtimeConfig: {
     geminiApiKey: process.env.GEMINI_API_KEY || ''
   },
