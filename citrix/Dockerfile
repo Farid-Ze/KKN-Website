@@ -4,7 +4,7 @@
 # Status: [EMPIRICALLY VERIFIED AUDIT - NUXT 3 NITRO DOCKER CONTAINERIZATION]
 # ============================================================================
 
-FROM node:20-alpine AS builder
+FROM node:24-alpine AS builder
 
 WORKDIR /app
 
@@ -21,7 +21,7 @@ COPY . .
 RUN npx nuxt build
 
 # ============================================================================
-FROM node:20-alpine AS runner
+FROM node:24-alpine AS runner
 
 WORKDIR /app
 
@@ -34,6 +34,8 @@ ENV NITRO_PRERENDER=false
 COPY --from=builder /app/.output ./.output
 # Copy public assets to ensure they're available
 COPY --from=builder /app/public ./public
+# Copy operator-managed knowledge base for runtime reads
+COPY --from=builder /app/server/data ./server/data
 
 EXPOSE 3000
 

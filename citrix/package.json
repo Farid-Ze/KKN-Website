@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "engines": {
-    "node": ">=24.18.1"
+    "node": ">=24.0.0"
   },
   "scripts": {
     "build": "nuxt build",
@@ -16,6 +16,7 @@
   "dependencies": {
     "@gltf-transform/core": "^4.4.2",
     "@gltf-transform/functions": "^4.4.2",
+    "@google/genai": "^2.16.0",
     "@pinia/nuxt": "^0.5.1",
     "gsap": "^3.12.5",
     "lenis": "^1.1.0",
@@ -27,7 +28,7 @@
     "vue-router": "^4.3.0"
   },
   "devDependencies": {
-    "@types/node": "^24.18.1",
+    "@types/node": "^24.0.0",
     "@types/three": "^0.160.0",
     "nuxt": "^3.11.2",
     "typescript": "^5.3.3",
